@@ -1,0 +1,83 @@
+{
+  "private": true,
+  "name": "demo",
+  "version": "0.0.1",
+  "build": {
+    "appId": "cn.net.bale",
+    "mac": {
+      "category": "cn.net.bale.category.note"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "directories": {
+      "output": "target"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "asar": true
+  },
+  "electronWebpack": {
+    "commonSourceDirectory": "src/common",
+    "staticSourceDirectory": "src/static",
+    "main": {
+      "sourceDirectory": "src/main"
+    },
+    "renderer": {
+      "sourceDirectory": null
+    }
+  },
+  "scripts": {
+    "umi:start": "umi dev",
+    "umi:build": "umi build",
+    "umi:postinstall": "umi generate tmp",
+    "umi:prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
+    "umi:test": "umi-test",
+    "umi:test:coverage": "umi-test --coverage",
+    "main:dev": "electron-webpack dev",
+    "main:compile": "electron-webpack",
+    "main:dist": "yarn main:compile && electron-builder",
+    "main:dist:dir": "yarn main:dist --dir -c.compression=store -c.mac.identity=null"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,less,md,json}": [
+      "prettier --write"
+    ],
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write"
+    ]
+  },
+  "dependencies": {
+    "@ant-design/pro-layout": "^6.5.0",
+    "@umijs/preset-react": "1.x",
+    "source-map-support": "^0.5.19",
+    "umi": "^3.3.7"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "@umijs/test": "^3.3.7",
+    "electron": "^11.2.1",
+    "electron-builder": "^22.9.1",
+    "electron-webpack": "^2.8.2",
+    "lint-staged": "^10.0.7",
+    "prettier": "^2.2.0",
+    "react": "17.x",
+    "react-dom": "17.x",
+    "typescript": "^4.1.2",
+    "umi-plugin-chunk-rename": "^1.0.1",
+    "yorkie": "^2.0.0"
+  }
+}
