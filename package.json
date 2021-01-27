@@ -61,6 +61,7 @@
   },
   "dependencies": {
     "@ant-design/pro-layout": "^6.5.0",
+    "@toast-ui/react-editor": "^2.5.1",
     "@umijs/preset-react": "1.x",
     "source-map-support": "^0.5.19",
     "umi": "^3.3.7"
