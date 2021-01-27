@@ -1,10 +1,10 @@
+import { CarryOutOutlined, FormOutlined } from '@ant-design/icons';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
-import { Layout } from 'antd';
+import { Layout, Tree } from 'antd';
 import 'codemirror/lib/codemirror.css';
-import React, { useRef, useState } from 'react';
-import { Tree, Switch } from 'antd';
-import { CarryOutOutlined, FormOutlined } from '@ant-design/icons';
+import React, { FC, useRef, useState } from 'react';
+import { connect, ConnectProps, IndexModelState, Loading } from 'umi';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -75,12 +75,17 @@ const treeData = [
   },
 ];
 
-export default function IndexPage() {
+interface PageProps extends ConnectProps {
+  index: IndexModelState;
+  loading: boolean;
+}
+
+const IndexPage: FC<PageProps> = ({ index, dispatch }) => {
   const ref: any = useRef(null);
   const [showLine, setShowLine] = useState<boolean | { showLeafIcon: boolean }>(
     true,
   );
-
+  const { name } = index;
   return (
     <Layout className="layout">
       <Sider
@@ -110,7 +115,7 @@ export default function IndexPage() {
           </Breadcrumb> */}
         <div className="site-layout-content">
           <Editor
-            initialValue="hello react editor world!"
+            initialValue={name}
             previewStyle="vertical"
             height="100vh"
             initialEditType="markdown"
@@ -121,4 +126,11 @@ export default function IndexPage() {
       </Content>
     </Layout>
   );
-}
+};
+
+export default connect(
+  ({ index, loading }: { index: IndexModelState; loading: Loading }) => ({
+    index,
+    loading: loading.models.index,
+  }),
+)(IndexPage);

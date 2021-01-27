@@ -2,7 +2,8 @@
 
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
-import { format as formatUrl } from 'url';
+import './store';
+import { format } from 'url';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -19,16 +20,17 @@ function createMainWindow() {
   // }
 
   if (isDevelopment) {
-    window.loadURL(`http://localhost:8000`);
+    window.loadURL(`http://localhost:8000/#/home`);
     // window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
   } else {
-    console.log(path.join(__dirname, 'index.html'));
     window.loadURL(
-      formatUrl({
-        pathname: path.join(__dirname, 'index.html'),
-        protocol: 'file',
-        slashes: true,
-      }),
+      format(
+        new URL({
+          pathname: path.join(__dirname, 'index.html'),
+          protocol: 'file',
+          slashes: true,
+        }),
+      ),
     );
   }
 

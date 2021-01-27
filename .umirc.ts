@@ -16,4 +16,8 @@ export default defineConfig({
   runtimePublicPath: true,
   // 配置 './' 用于 直接electron main进程直接访问 index.html
   publicPath: './',
+  dva: {
+    immer: true,
+    hmr: false,
+  },
 });
