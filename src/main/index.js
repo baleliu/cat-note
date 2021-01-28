@@ -1,6 +1,6 @@
 'use strict';
 
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import './store';
 import { format } from 'url';
@@ -20,7 +20,7 @@ function createMainWindow() {
   // }
 
   if (isDevelopment) {
-    window.loadURL(`http://localhost:8000/#/home`);
+    window.loadURL(`http://localhost:8000/#/open`);
     // window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
   } else {
     window.loadURL(
@@ -66,4 +66,15 @@ app.on('activate', () => {
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
   mainWindow = createMainWindow();
+});
+
+ipcMain.on('synchronous-message', (event, arg) => {
+  console.log(arg); // prints "ping"
+  event.returnValue = 'pong';
+});
+
+ipcMain.on('asynchronous-message', (event, arg) => {
+  console.log(arg); // prints "ping"
+  event.reply('asynchronous-reply', 'pong');
+  mainWindow.loadURL(arg);
 });

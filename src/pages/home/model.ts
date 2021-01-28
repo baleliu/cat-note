@@ -1,4 +1,4 @@
-import { Effect, ImmerReducer, Reducer, Subscription } from 'umi';
+import { Effect, ImmerReducer, Subscription } from 'umi';
 
 const Store = window.require('electron-store');
 const store = new Store();
