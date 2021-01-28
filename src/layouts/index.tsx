@@ -1,5 +1,13 @@
-import { Input, Layout } from 'antd';
-import React, { useRef } from 'react';
+import { Menu, Input, Layout, Drawer, Button, Avatar } from 'antd';
+import React, { useRef, useState } from 'react';
+import {
+  UserOutlined,
+  PieChartOutlined,
+  FileOutlined,
+  DownCircleOutlined,
+  DesktopOutlined,
+} from '@ant-design/icons';
+import './style.less';
 import {
   connect,
   GlobalLayoutModelState,
@@ -9,6 +17,7 @@ import {
 
 const { Header, Footer, Sider, Content } = Layout;
 const { Search } = Input;
+const { SubMenu } = Menu;
 
 const GlobalLayout = ({
   children,
@@ -20,25 +29,74 @@ const GlobalLayout = ({
   dispatch,
 }: IRouteComponentProps) => {
   console.log(globalLayout);
+
+  const [visible, setVisible] = useState(false);
+  const showDrawer = () => {
+    setVisible(true);
+  };
+  const onClose = () => {
+    setVisible(false);
+  };
+
   const inputRef: any = useRef();
   return (
-    <Layout>
-      <Header>
-        <Input
-          placeholder="输入在线应用页面"
-          ref={inputRef}
-          defaultValue={'http://localhost:8000/#/home'}
-          onPressEnter={(e) => {
-            const { value } = inputRef.current.state;
+    <>
+      <Drawer
+        placement="top"
+        closable={false}
+        onClose={onClose}
+        visible={visible}
+      >
+        <div style={{ marginTop: '50px' }} />
+        <Button
+          style={{
+            border: '1px solid black',
+          }}
+          onClick={() => {
             dispatch({
               type: 'globalLayout/load',
-              payload: value,
+              payload: 'http://localhost:8000/#/home',
             });
           }}
-        />
-      </Header>
-      <Content>{children}</Content>
-    </Layout>
+          type="link"
+        >
+          http://localhost:8000/#/home
+        </Button>
+      </Drawer>
+      <Layout>
+        <Sider className="navSider" width="66px" theme="light" collapsed={true}>
+          <Avatar
+            style={{
+              backgroundColor: '#87d068',
+              marginLeft: '16px',
+              marginRight: '16px',
+              marginTop: '50px',
+              marginBottom: '20px',
+            }}
+            icon={<UserOutlined />}
+          />
+          <Menu defaultSelectedKeys={['1']} mode="inline">
+            <Menu.Item
+              key="1"
+              onClick={showDrawer}
+              icon={<DownCircleOutlined />}
+            >
+              应用菜单
+            </Menu.Item>
+            <Menu.Item key="2" icon={<DesktopOutlined />}>
+              todo
+            </Menu.Item>
+          </Menu>
+        </Sider>
+        <Layout
+          style={{
+            marginLeft: '66px',
+          }}
+        >
+          <Content>{children}</Content>
+        </Layout>
+      </Layout>
+    </>
   );
 };
 

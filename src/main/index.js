@@ -12,6 +12,7 @@ let mainWindow;
 
 function createMainWindow() {
   const window = new BrowserWindow({
+    titleBarStyle: 'hidden',
     webPreferences: { nodeIntegration: true },
   });
 
