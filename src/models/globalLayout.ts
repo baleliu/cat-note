@@ -12,6 +12,7 @@ export interface GlobalLayoutModelType {
   effects: {};
   reducers: {
     load: ImmerReducer<GlobalLayoutModelState>;
+    openDevTools: ImmerReducer<GlobalLayoutModelState>;
   };
   subscriptions: { setup: Subscription };
 }
@@ -26,6 +27,9 @@ const GlobalLayoutModel: GlobalLayoutModelType = {
     load(state, action) {
       state.name = action.payload;
       ipcRenderer.send('asynchronous-message', action.payload);
+    },
+    openDevTools() {
+      ipcRenderer.send('open-dev-tools');
     },
   },
   subscriptions: {

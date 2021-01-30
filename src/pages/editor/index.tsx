@@ -1,10 +1,15 @@
 import { CarryOutOutlined, FormOutlined } from '@ant-design/icons';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
-import { Layout, Tree, Select } from 'antd';
+import { Layout, Tree, Select, Input, Row, Col } from 'antd';
 import 'codemirror/lib/codemirror.css';
 import React, { FC, useRef, useState } from 'react';
 import { connect, ConnectProps, IndexModelState, Loading } from 'umi';
+import DragLine from '@/components/DragLine';
+import * as FileUtil from '@/infra/util/FileUtil';
+import './style.less';
+
+import { PlusSquareOutlined } from '@ant-design/icons';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Option } = Select;
@@ -83,18 +88,29 @@ interface PageProps extends ConnectProps {
 
 const IndexPage: FC<PageProps> = ({ index, dispatch }) => {
   const ref: any = useRef(null);
-  const [showLine, setShowLine] = useState<boolean | { showLeafIcon: boolean }>(
-    true,
-  );
+  const categoryRef: any = useRef();
+  const [showSiderWidth, setShowSiderWidth] = useState<{
+    siderWidth: string;
+  }>({
+    siderWidth: '300px',
+  });
   const { name } = index;
-
   return (
     <Layout className="layout">
+      <DragLine
+        boundStart={300}
+        onDrag={(x: number) => {
+          console.log(x);
+          setShowSiderWidth({
+            siderWidth: 300 + x + 'px',
+          });
+        }}
+        boundWidth="200px"
+      ></DragLine>
       <Sider
-        width="300px"
+        width={showSiderWidth.siderWidth}
         style={{
           background: 'rgba(255, 255, 255, 0.3)',
-          border: '1px solid black',
         }}
       >
         <Select
@@ -107,35 +123,58 @@ const IndexPage: FC<PageProps> = ({ index, dispatch }) => {
           <Option value="kb02">知识库02</Option>
           <Option value="kb03">知识库03</Option>
         </Select>
+        <div
+          style={{
+            height: '70px',
+            padding: '0 0',
+            margin: '0 0',
+          }}
+        >
+          <PlusSquareOutlined
+            style={{
+              fontSize: '50px',
+              marginTop: '10px',
+              marginBottom: '10px',
+              width: '100%',
+            }}
+          />
+        </div>
         <Tree
+          draggable={true}
           defaultExpandedKeys={['0-0-0-0']}
           treeData={treeData}
           showIcon={true}
         />
       </Sider>
-      <Content
-        style={{
-          padding: '0 50px',
-          height: '100vh',
-        }}
-      >
-        {/* todo 编辑器头
-        <Breadcrumb style={{ margin: '16px 0' }}>
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
-            <Breadcrumb.Item>List</Breadcrumb.Item>
-            <Breadcrumb.Item>App</Breadcrumb.Item>
-          </Breadcrumb> */}
-        <div className="site-layout-content">
+      <Layout>
+        <Header className="editor-title">
+          <Input
+            placeholder="请输入标题"
+            bordered={false}
+            size="large"
+            style={{
+              fontSize: '30px',
+              lineHeight: '60px',
+              padding: '0 0',
+            }}
+          />
+        </Header>
+        <Content
+          style={{
+            padding: '0 0px',
+            height: 'calc(100vh - 60px)',
+          }}
+        >
           <Editor
             initialValue={name}
             previewStyle="vertical"
-            height="100vh"
+            height="calc(100vh - 60px)"
             initialEditType="markdown"
             ref={ref}
-            useCommandShortcut={true}
+            useCommandShortcut={false}
           />
-        </div>
-      </Content>
+        </Content>
+      </Layout>
     </Layout>
   );
 };

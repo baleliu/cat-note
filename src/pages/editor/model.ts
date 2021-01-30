@@ -1,4 +1,5 @@
 import { Effect, ImmerReducer, Subscription } from 'umi';
+import * as FileUtil from '@/infra/util/FileUtil';
 
 const Store = window.require('electron-store');
 const store = new Store();
@@ -38,20 +39,24 @@ const IndexModel: IndexModelType = {
   reducers: {
     save(state, action) {
       state.name = action.payload;
-      console.log('save');
-      console.log(action.payload);
+      // console.log('save');
+      // console.log(action.payload);
     },
   },
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname }) => {
-        if (pathname === '/home') {
+        if (pathname === '/editor') {
           dispatch({
             type: 'query',
-            payload: 'hh',
+            payload: FileUtil.read('/Users/bale/Desktop/index.tsx'),
           });
-          store.set('unicorn', '🦄');
-          console.log(store.get('unicorn'));
+          store.set('category.a', {
+            title: 'testTitle',
+            fileKey: '/Users/bale/Desktop/index.tsx',
+          });
+          console.log(store.get('category.a.title'));
+          console.log(store.get('category.a.fileKey'));
         }
       });
     },

@@ -20,7 +20,7 @@ function createMainWindow() {
   });
 
   // if (isDevelopment) {
-  window.webContents.openDevTools();
+  // window.webContents.openDevTools();
   // }
 
   if (isDevelopment) {
@@ -71,6 +71,7 @@ app.on('activate', () => {
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
   mainWindow = createMainWindow();
+  openDevToolsMainWindow();
 });
 
 ipcMain.on('synchronous-message', (event, arg) => {
@@ -83,3 +84,11 @@ ipcMain.on('asynchronous-message', (event, arg) => {
   event.reply('asynchronous-reply', 'pong');
   mainWindow.loadURL(arg);
 });
+
+ipcMain.on('open-dev-tools', () => {
+  openDevToolsMainWindow();
+});
+
+openDevToolsMainWindow = () => {
+  mainWindow.webContents.openDevTools();
+};

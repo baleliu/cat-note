@@ -14,7 +14,6 @@ import {
   IRouteComponentProps,
   Loading,
 } from 'umi';
-
 const { Header, Footer, Sider, Content } = Layout;
 const { Search } = Input;
 const { SubMenu } = Menu;
@@ -55,12 +54,12 @@ const GlobalLayout = ({
           onClick={() => {
             dispatch({
               type: 'globalLayout/load',
-              payload: 'http://localhost:8000/#/home',
+              payload: 'http://localhost:8000/#/editor',
             });
           }}
           type="link"
         >
-          http://localhost:8000/#/home
+          http://localhost:8000/#/editor
         </Button>
         <Button
           style={{
@@ -68,14 +67,25 @@ const GlobalLayout = ({
           }}
           onClick={() => {
             dispatch({
-              type: 'globalLayout/load',
-              payload: 'http://localhost:8000/#/open',
+              type: 'globalLayout/openDevTools',
             });
           }}
           type="link"
         >
-          http://localhost:8000/#/open
+          open-dev-tools
         </Button>
+        <hr />
+        <Input
+          ref={inputRef}
+          defaultValue="http://localhost:8000/#/"
+          onPressEnter={() => {
+            const { value } = inputRef.current.state;
+            dispatch({
+              type: 'globalLayout/load',
+              payload: value,
+            });
+          }}
+        />
       </Drawer>
       <Layout>
         <Sider className="navSider" width="66px" theme="light" collapsed={true}>
@@ -89,7 +99,6 @@ const GlobalLayout = ({
             }}
             icon={<UserOutlined />}
           />
-
           <Menu defaultSelectedKeys={['1']} mode="inline">
             <Menu.Item
               key="1"
@@ -122,5 +131,3 @@ export default connect(
     };
   },
 )(GlobalLayout);
-
-// export default GlobalLayout;
