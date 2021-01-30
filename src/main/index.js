@@ -4,6 +4,9 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import './store';
 import { format } from 'url';
+import os from 'os';
+
+console.log(os.type());
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -45,7 +48,8 @@ function createMainWindow() {
       window.focus();
     });
   });
-
+  // 隐藏窗口的菜单栏
+  window.setMenuBarVisibility(false);
   return window;
 }
 
