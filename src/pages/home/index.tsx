@@ -1,12 +1,13 @@
 import { CarryOutOutlined, FormOutlined } from '@ant-design/icons';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
-import { Layout, Tree } from 'antd';
+import { Layout, Tree, Select } from 'antd';
 import 'codemirror/lib/codemirror.css';
 import React, { FC, useRef, useState } from 'react';
 import { connect, ConnectProps, IndexModelState, Loading } from 'umi';
 
 const { Header, Content, Footer, Sider } = Layout;
+const { Option } = Select;
 
 const treeData = [
   {
@@ -86,6 +87,7 @@ const IndexPage: FC<PageProps> = ({ index, dispatch }) => {
     true,
   );
   const { name } = index;
+
   return (
     <Layout className="layout">
       <Sider
@@ -95,6 +97,16 @@ const IndexPage: FC<PageProps> = ({ index, dispatch }) => {
           border: '1px solid black',
         }}
       >
+        <Select
+          showSearch
+          style={{ width: '100%' }}
+          placeholder="Select a person"
+          optionFilterProp="children"
+        >
+          <Option value="kb01">知识库01</Option>
+          <Option value="kb02">知识库02</Option>
+          <Option value="kb03">知识库03</Option>
+        </Select>
         <Tree
           defaultExpandedKeys={['0-0-0-0']}
           treeData={treeData}

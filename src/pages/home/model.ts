@@ -50,7 +50,6 @@ const IndexModel: IndexModelType = {
             type: 'query',
             payload: 'hh',
           });
-
           store.set('unicorn', '🦄');
           console.log(store.get('unicorn'));
         }

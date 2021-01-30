@@ -62,6 +62,20 @@ const GlobalLayout = ({
         >
           http://localhost:8000/#/home
         </Button>
+        <Button
+          style={{
+            border: '1px solid black',
+          }}
+          onClick={() => {
+            dispatch({
+              type: 'globalLayout/load',
+              payload: 'http://localhost:8000/#/open',
+            });
+          }}
+          type="link"
+        >
+          http://localhost:8000/#/open
+        </Button>
       </Drawer>
       <Layout>
         <Sider className="navSider" width="66px" theme="light" collapsed={true}>
@@ -75,6 +89,7 @@ const GlobalLayout = ({
             }}
             icon={<UserOutlined />}
           />
+
           <Menu defaultSelectedKeys={['1']} mode="inline">
             <Menu.Item
               key="1"
