@@ -1,7 +1,7 @@
 import { Effect, ImmerReducer, Subscription } from 'umi';
 
-const electron = window.require('electron');
-const { ipcRenderer } = electron;
+// const electron = window.require('electron');
+// const { ipcRenderer } = electron;
 
 export interface GlobalLayoutModelState {
   name: string;
@@ -26,10 +26,10 @@ const GlobalLayoutModel: GlobalLayoutModelType = {
   reducers: {
     load(state, action) {
       state.name = action.payload;
-      ipcRenderer.send('asynchronous-message', action.payload);
+      // ipcRenderer.send('asynchronous-message', action.payload);
     },
     openDevTools() {
-      ipcRenderer.send('open-dev-tools');
+      window.api.openDevTools();
     },
   },
   subscriptions: {

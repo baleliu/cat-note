@@ -1,11 +1,15 @@
 'use strict';
 
-import { app, BrowserWindow, ipcMain } from 'electron';
+// import { app, BrowserWindow, ipcMain } from 'electron';
+
+const { app, BrowserWindow, ipcMain } = require('electron');
+
 import * as path from 'path';
 import './store';
 import { format } from 'url';
 import os from 'os';
 
+// 操作系统类型
 console.log(os.type());
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -16,25 +20,27 @@ let mainWindow;
 function createMainWindow() {
   const window = new BrowserWindow({
     titleBarStyle: 'hidden',
-    webPreferences: { nodeIntegration: true },
+    width: 1000,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: true,
+      enableRemoteModule: false,
+      // path.join(__dirname, "preload.js") 为相对路径, preload 需要转绝对路径
+      preload: path.resolve(path.join(__dirname, 'preload.js')),
+    },
   });
 
-  // if (isDevelopment) {
-  // window.webContents.openDevTools();
-  // }
-
   if (isDevelopment) {
-    window.loadURL(`http://localhost:8000/#/open`);
+    window.loadURL(`http://localhost:8000/#/editor`);
     // window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
   } else {
     window.loadURL(
-      format(
-        new URL({
-          pathname: path.join(__dirname, 'index.html'),
-          protocol: 'file',
-          slashes: true,
-        }),
-      ),
+      format({
+        pathname: path.join(__dirname, 'index.html'),
+        protocol: 'file',
+        slashes: true,
+      }),
     );
   }
 
@@ -71,7 +77,7 @@ app.on('activate', () => {
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
   mainWindow = createMainWindow();
-  openDevToolsMainWindow();
+  mainWindow.webContents.openDevTools();
 });
 
 ipcMain.on('synchronous-message', (event, arg) => {
@@ -86,9 +92,7 @@ ipcMain.on('asynchronous-message', (event, arg) => {
 });
 
 ipcMain.on('open-dev-tools', () => {
-  openDevToolsMainWindow();
+  mainWindow.webContents.openDevTools();
 });
 
-openDevToolsMainWindow = () => {
-  mainWindow.webContents.openDevTools();
-};
+// todo https://electronjs.org/docs/tutorial/security#11-verify-webview-options-before-creation

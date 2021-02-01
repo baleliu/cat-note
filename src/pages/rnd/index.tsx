@@ -1,5 +1,4 @@
 import { Rnd } from 'react-rnd';
-import DragLine from '@/components/DragLine';
 
 export default () => {
   const style = {
@@ -11,14 +10,7 @@ export default () => {
   } as const;
   return (
     <>
-      <DragLine
-        boundStart={10}
-        onDrag={(e: any) => {
-          console.log(e);
-        }}
-        boundWidth="100px"
-      />
-      {/* <Rnd
+      <Rnd
         style={style}
         default={{
           x: 0,
@@ -28,7 +20,7 @@ export default () => {
         }}
       >
         Rnd
-      </Rnd> */}
+      </Rnd>
     </>
   );
 };

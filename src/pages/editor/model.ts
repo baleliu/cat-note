@@ -1,8 +1,8 @@
-import { Effect, ImmerReducer, Subscription } from 'umi';
 import * as FileUtil from '@/infra/util/FileUtil';
+import { Effect, ImmerReducer, Subscription } from 'umi';
 
-const Store = window.require('electron-store');
-const store = new Store();
+// const Store = window.require('electron-store');
+// const store = new Store();
 
 export interface IndexModelState {
   name: string;
@@ -49,14 +49,16 @@ const IndexModel: IndexModelType = {
         if (pathname === '/editor') {
           dispatch({
             type: 'query',
-            payload: FileUtil.read('/Users/bale/Desktop/index.tsx'),
+            payload: window.api.file.readFileSync(
+              '/Users/bale/Desktop/index.tsx',
+            ),
           });
-          store.set('category.a', {
-            title: 'testTitle',
-            fileKey: '/Users/bale/Desktop/index.tsx',
-          });
-          console.log(store.get('category.a.title'));
-          console.log(store.get('category.a.fileKey'));
+          // store.set('category.a', {
+          //   title: 'testTitle',
+          //   fileKey: '/Users/bale/Desktop/index.tsx',
+          // });
+          // console.log(store.get('category.a.title'));
+          // console.log(store.get('category.a.fileKey'));
         }
       });
     },

@@ -30,7 +30,8 @@
     "commonSourceDirectory": "src/common",
     "staticSourceDirectory": "src/static",
     "main": {
-      "sourceDirectory": "src/main"
+      "sourceDirectory": "src/main",
+      "extraEntries": ["@/preload.js"]
     },
     "renderer": {
       "sourceDirectory": null
@@ -76,7 +77,7 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@umijs/test": "^3.3.7",
-    "electron": "^11.2.1",
+    "electron": "^11.1.1",
     "electron-builder": "^22.9.1",
     "electron-webpack": "^2.8.2",
     "lint-staged": "^10.0.7",

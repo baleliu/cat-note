@@ -1,24 +1,32 @@
-import { CarryOutOutlined, FormOutlined } from '@ant-design/icons';
+import DragLine from '@/components/DragLine';
+import {
+  CarryOutOutlined,
+  FormOutlined,
+  PlusSquareOutlined,
+} from '@ant-design/icons';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
-import { Layout, Tree, Select, Input, Row, Col } from 'antd';
+import { Input, Layout, Select, Tree } from 'antd';
 import 'codemirror/lib/codemirror.css';
 import React, { FC, useRef, useState } from 'react';
 import { connect, ConnectProps, IndexModelState, Loading } from 'umi';
-import DragLine from '@/components/DragLine';
-import * as FileUtil from '@/infra/util/FileUtil';
 import './style.less';
-
-import { PlusSquareOutlined } from '@ant-design/icons';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Option } = Select;
+
+const x = (name: string) => {
+  switch (name) {
+    case 'CarryOutOutlined':
+      return <CarryOutOutlined />;
+  }
+};
 
 const treeData = [
   {
     title: 'parent 1',
     key: '0-0',
-    icon: <CarryOutOutlined />,
+    icon: x('CarryOutOutlined'),
     children: [
       {
         title: 'parent 1-0',

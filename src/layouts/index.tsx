@@ -1,22 +1,16 @@
-import { Menu, Input, Layout, Drawer, Button, Avatar } from 'antd';
-import React, { useRef, useState } from 'react';
 import {
-  UserOutlined,
-  PieChartOutlined,
-  FileOutlined,
-  DownCircleOutlined,
   DesktopOutlined,
+  DownCircleOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
+import { Avatar, Button, Drawer, Input, Layout, Menu } from 'antd';
+import React, { useRef, useState } from 'react';
+import { connect, GlobalLayoutModelState, IRouteComponentProps } from 'umi';
 import './style.less';
-import {
-  connect,
-  GlobalLayoutModelState,
-  IRouteComponentProps,
-  Loading,
-} from 'umi';
 const { Header, Footer, Sider, Content } = Layout;
 const { Search } = Input;
 const { SubMenu } = Menu;
+import { getDvaApp } from 'umi';
 
 const GlobalLayout = ({
   children,
@@ -61,19 +55,6 @@ const GlobalLayout = ({
         >
           http://localhost:8000/#/editor
         </Button>
-        <Button
-          style={{
-            border: '1px solid black',
-          }}
-          onClick={() => {
-            dispatch({
-              type: 'globalLayout/openDevTools',
-            });
-          }}
-          type="link"
-        >
-          open-dev-tools
-        </Button>
         <hr />
         <Input
           ref={inputRef}
@@ -107,8 +88,16 @@ const GlobalLayout = ({
             >
               应用菜单
             </Menu.Item>
-            <Menu.Item key="2" icon={<DesktopOutlined />}>
-              todo
+            <Menu.Item
+              key="2"
+              onClick={() => {
+                dispatch({
+                  type: 'globalLayout/openDevTools',
+                });
+              }}
+              icon={<DesktopOutlined />}
+            >
+              打开控制台
             </Menu.Item>
           </Menu>
         </Sider>
