@@ -3,11 +3,14 @@
 // import { app, BrowserWindow, ipcMain } from 'electron';
 
 const { app, BrowserWindow, ipcMain } = require('electron');
+import Store from 'electron-store';
 
 import * as path from 'path';
 import './store';
 import { format } from 'url';
 import os from 'os';
+import fs from 'fs';
+const store = new Store();
 
 // 操作系统类型
 console.log(os.type());
@@ -95,4 +98,45 @@ ipcMain.on('open-dev-tools', () => {
   mainWindow.webContents.openDevTools();
 });
 
-// todo https://electronjs.org/docs/tutorial/security#11-verify-webview-options-before-creation
+ipcMain.on('write-file', (event, arg) => {
+  let dir = path.join(app.getPath('userData'), arg.tag ? arg.tag : 'default');
+  try {
+    let stat = fs.statSync(dir);
+    if (!stat.isDirectory()) {
+      fs.mkdirSync(dir);
+    }
+  } catch (e) {
+    fs.mkdirSync(dir);
+  }
+  fs.writeFile(path.join(dir, arg.fileKey), arg.data, (err) => {
+    if (err) throw err;
+    console.log('文件已被保存');
+  });
+});
+
+ipcMain.on('db-set', (event, arg) => {
+  console.log(arg);
+  store.set(arg.key, arg.value);
+});
+
+ipcMain.on('db-get', (event, arg) => {
+  console.log(arg);
+  let value = store.get(arg);
+  console.log(value);
+  event.returnValue = value;
+});
+
+ipcMain.on('read-file', (event, arg) => {
+  try {
+    event.returnValue = fs.readFileSync(
+      path.join(
+        path.join(app.getPath('userData'), arg.tag ? arg.tag : 'default'),
+        arg.fileKey,
+      ),
+      'utf8',
+    );
+  } catch (e) {
+    console.log(e);
+    event.returnValue = '';
+  }
+});

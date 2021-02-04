@@ -1,18 +1,12 @@
 import DragLine from '@/components/DragLine';
 import TuiEditor from '@/components/TuiEditor';
-import {
-  CarryOutOutlined,
-  FormOutlined,
-  PlusSquareOutlined,
-} from '@ant-design/icons';
+import { CarryOutOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import '@toast-ui/editor/dist/toastui-editor.css';
-import { Editor } from '@toast-ui/react-editor';
 import { Input, Layout, Select, Tree } from 'antd';
 import 'codemirror/lib/codemirror.css';
 import React, { FC, useRef, useState } from 'react';
 import { connect, ConnectProps, IndexModelState, Loading } from 'umi';
 import './style.less';
-import '@toast-ui/editor/dist/toastui-editor.css';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Option } = Select;
@@ -84,6 +78,7 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
               dispatch &&
                 dispatch({
                   type: 'editorModel/add',
+                  payload: editorModel.treeData,
                 });
             }}
           />
@@ -93,23 +88,15 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
             selectedKeys,
             { selected: bool, selectedNodes, node, event },
           ) => {
-            // console.log(node);
-            const { fileKey, key } = node;
-            console.log(node);
-            // console.log(fileKey);
-            let text;
-            fileKey
-              ? (text = window.api.file.readFileSync(fileKey))
-              : (text = '');
+            const { fileKey, key } = node as any;
             dispatch &&
               dispatch({
-                type: 'editorModel/save',
-                payload: text,
+                type: 'editorModel/load',
+                payload: fileKey,
               });
             setX({
               value: key,
             });
-            // text && editorRef.current.getInstance().setMarkdown(text, false);
           }}
           onDragEnd={(info) => {
             // console.log(info);
@@ -203,7 +190,17 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
             height: 'calc(100vh - 60px)',
           }}
         >
-          <TuiEditor value={editorModel.name} key={x ? x.value : ''} />
+          <TuiEditor
+            value={editorModel.currentText}
+            key={x ? x.value : ''}
+            blur={(text) => {
+              dispatch &&
+                dispatch({
+                  type: 'editorModel/save',
+                  payload: text,
+                });
+            }}
+          />
         </Content>
       </Layout>
     </Layout>
