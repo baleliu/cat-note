@@ -26,7 +26,7 @@ const GlobalLayoutModel: GlobalLayoutModelType = {
   reducers: {
     load(state, action) {
       state.name = action.payload;
-      // ipcRenderer.send('asynchronous-message', action.payload);
+      window.api.forward(action.payload);
     },
     openDevTools() {
       window.api.openDevTools();

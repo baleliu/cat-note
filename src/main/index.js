@@ -51,12 +51,54 @@ function createMainWindow() {
     mainWindow = null;
   });
 
+  // window.open 动作 https://www.electronjs.org/docs/api/web-contents#event-new-window
+  window.webContents.on(
+    'new-window',
+    (
+      event,
+      url,
+      frameName,
+      disposition,
+      options,
+      additionalFeatures,
+      referrer,
+      postBody,
+    ) => {
+      event.preventDefault();
+      // const win = new BrowserWindow({
+      //   webContents: options.webContents, // use existing webContents if provided
+      //   show: false
+      // })
+      // win.once('ready-to-show', () => win.show())
+      // if (!options.webContents) {
+      //   const loadOptions = {
+      //     httpReferrer: referrer
+      //   }
+      //   if (postBody != null) {
+      //     const { data, contentType, boundary } = postBody
+      //     loadOptions.postData = postBody.data
+      //     loadOptions.extraHeaders = `content-type: ${contentType}; boundary=${boundary}`
+      //   }
+
+      //   win.loadURL(url, loadOptions) // existing webContents will be navigated automatically
+      // }
+      // event.newGuest = win
+    },
+  );
+
   window.webContents.on('devtools-opened', () => {
     window.focus();
     setImmediate(() => {
       window.focus();
     });
   });
+
+  // a标签 动作 https://www.electronjs.org/docs/api/web-contents#event-will-navigate
+  window.webContents.on('will-navigate', (event, url) => {
+    // event.preventDefault();
+    // console.log(url);
+  });
+
   // 隐藏窗口的菜单栏
   window.setMenuBarVisibility(false);
   return window;
@@ -88,9 +130,8 @@ ipcMain.on('synchronous-message', (event, arg) => {
   event.returnValue = 'pong';
 });
 
-ipcMain.on('asynchronous-message', (event, arg) => {
-  console.log(arg); // prints "ping"
-  event.reply('asynchronous-reply', 'pong');
+ipcMain.on('forward', (event, arg) => {
+  console.log(arg);
   mainWindow.loadURL(arg);
 });
 
@@ -115,19 +156,19 @@ ipcMain.on('write-file', (event, arg) => {
 });
 
 ipcMain.on('db-set', (event, arg) => {
-  console.log(arg);
   store.set(arg.key, arg.value);
 });
 
 ipcMain.on('db-get', (event, arg) => {
-  console.log(arg);
   let value = store.get(arg);
-  console.log(value);
   event.returnValue = value;
 });
 
 ipcMain.on('read-file', (event, arg) => {
   try {
+    console.log(arg.fileKey);
+    console.log(app.getPath('userData'));
+    console.log(arg.tag ? arg.tag : 'default');
     event.returnValue = fs.readFileSync(
       path.join(
         path.join(app.getPath('userData'), arg.tag ? arg.tag : 'default'),

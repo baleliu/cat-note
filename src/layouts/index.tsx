@@ -99,6 +99,24 @@ const GlobalLayout = ({
             >
               打开控制台
             </Menu.Item>
+            <Menu.Item
+              key="3"
+              onClick={() => {
+                alert('todo 创建知识库');
+              }}
+              icon={<DesktopOutlined />}
+            >
+              创建知识库
+            </Menu.Item>
+            <Menu.Item
+              key="4"
+              onClick={() => {
+                alert('todo 设置');
+              }}
+              icon={<DesktopOutlined />}
+            >
+              设置
+            </Menu.Item>
           </Menu>
         </Sider>
         <Layout

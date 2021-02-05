@@ -12,17 +12,31 @@ console.log(store.get('liu'));
 
 // window.addEventListener('DOMContentLoaded', () => {
 //   const replaceText = (selector, text) => {
-//     const element = document.getElementById(selector)
-//     if (element) element.innerText = text
-//   }
+//     const element = document.getElementById(selector);
+//     if (element) element.innerText = text;
+//   };
 
 //   for (const type of ['chrome', 'node', 'electron']) {
-//     replaceText(`${type}-version`, process.versions[type])
+//     replaceText(`${type}-version`, process.versions[type]);
 //   }
-// })
+
+//   const links = document.querySelectorAll('a[href]');
+//   links.forEach((link) => {
+//     link.addEventListener('click', (e) => {
+//       const url = link.getAttribute('href');
+//       console.log(url);
+//       e.preventDefault();
+//       // shell.openExternal(url);
+//     });
+//   });
+// });
 
 contextBridge.exposeInMainWorld('api', {
   file: FileService.file,
+  forward: (url) => {
+    console.log(url);
+    ipcRenderer.send('forward', url);
+  },
   openDevTools: () => {
     ipcRenderer.send('open-dev-tools');
   },

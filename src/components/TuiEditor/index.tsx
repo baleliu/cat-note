@@ -1,5 +1,7 @@
 import React, { useRef } from 'react';
 import { Editor } from '@toast-ui/react-editor';
+import '@toast-ui/editor/dist/toastui-editor.css';
+import 'codemirror/lib/codemirror.css';
 
 export default (props: {
   value: string;
@@ -7,9 +9,6 @@ export default (props: {
   blur?: (md: string) => void;
 }) => {
   const editorRef: any = useRef(null);
-
-  const getText = () => [];
-
   return (
     <div>
       <Editor

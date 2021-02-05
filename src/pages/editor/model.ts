@@ -1,19 +1,19 @@
 import { Effect, ImmerReducer, Subscription } from 'umi';
-import { AnyAction } from 'redux';
-import produce from 'immer';
 import uuid from 'uuid';
 
-interface CategoryNode {
+interface CatalogNode {
   title: string;
   key: string;
   fileKey?: string;
-  children?: CategoryNode[];
+  children?: CatalogNode[];
 }
 
 export interface IndexModelState {
   currentText: string;
   currentFileKey?: string;
-  treeData: CategoryNode[];
+  currentTitle?: string;
+  currentKey?: string;
+  treeData: CatalogNode[];
 }
 export interface IndexModelType {
   namespace: 'editorModel';
@@ -23,9 +23,11 @@ export interface IndexModelType {
   };
   reducers: {
     save: ImmerReducer<IndexModelState>;
-    load: ImmerReducer<IndexModelState>;
+    loadText: ImmerReducer<IndexModelState>;
     add: ImmerReducer<IndexModelState>;
-    loadCatelog: ImmerReducer<IndexModelState>;
+    loadCatalog: ImmerReducer<IndexModelState>;
+    updateCatalog: ImmerReducer<IndexModelState>;
+    saveCatalog: ImmerReducer<IndexModelState>;
   };
   subscriptions: { setup: Subscription };
 }
@@ -55,35 +57,55 @@ const IndexModel: IndexModelType = {
           fileKey: state.currentFileKey,
           data: state.currentText,
         });
-      console.log('save');
     },
-    load(state, action) {
-      state.currentFileKey = action.payload;
+    loadText(state, action) {
+      const { fileKey, title, key } = action.payload;
+      state.currentKey = key;
+      state.currentFileKey = fileKey;
+      state.currentTitle = title;
       state.currentText = state.currentFileKey
-        ? window.api.file.readFileSync(action.payload)
+        ? window.api.file.readFileSync(fileKey)
         : '';
     },
-    loadCatelog(state, action) {
-      console.log('loadCatelog');
-      let catelog = window.api.db.get('catelog');
-      console.log(catelog);
-      catelog && (state.treeData = catelog);
+    loadCatalog(state, action) {
+      let catalog = window.api.db.get('catalog');
+      catalog && (state.treeData = catalog);
+    },
+    updateCatalog(state, action) {
+      let catalog = window.api.db.get('catalog');
+      let { key, title } = action.payload;
+      catalog && (state.treeData = catalog);
+      const findNode = (
+        tree: CatalogNode[],
+        callback: (node: CatalogNode) => void,
+      ) => {
+        for (let i in tree) {
+          const node = tree[i];
+          if (node.key === key) {
+            callback(node);
+            return;
+          }
+          node.children && findNode(node.children, callback);
+        }
+      };
+      findNode(state.treeData, (node) => {
+        node.title = title;
+      });
     },
     add(state, action) {
-      let key = uuid.v4();
-      state.treeData.push({
-        title: '新建文档',
+      const key = uuid.v4();
+      const newTitle = '新建文档';
+      const newTreeNode = {
+        title: newTitle,
         key: key,
         fileKey: key,
-      });
-      console.log();
-      let treeData: CategoryNode[] = [...action.payload];
-      treeData.push({
-        title: '新建文档',
-        key: key,
-        fileKey: key,
-      });
-      window.api.db.set('catelog', treeData);
+      };
+      state.treeData.push(newTreeNode);
+      let treeData: CatalogNode[] = [...action.payload];
+      treeData.push(newTreeNode);
+    },
+    saveCatalog(state, action) {
+      window.api.db.set('catalog', action.payload);
     },
   },
   subscriptions: {
@@ -91,7 +113,7 @@ const IndexModel: IndexModelType = {
       return history.listen(({ pathname }) => {
         if (pathname === '/editor') {
           dispatch({
-            type: 'loadCatelog',
+            type: 'loadCatalog',
           });
           // store.set('category.a', {
           //   title: 'testTitle',

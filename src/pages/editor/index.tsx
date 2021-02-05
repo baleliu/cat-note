@@ -1,14 +1,14 @@
 import DragLine from '@/components/DragLine';
 import TuiEditor from '@/components/TuiEditor';
+import EditorTitle from '@/components/EditorTitle';
 import { CarryOutOutlined, PlusSquareOutlined } from '@ant-design/icons';
-import '@toast-ui/editor/dist/toastui-editor.css';
+
 import { Input, Layout, Select, Tree } from 'antd';
-import 'codemirror/lib/codemirror.css';
 import React, { FC, useRef, useState } from 'react';
 import { connect, ConnectProps, IndexModelState, Loading } from 'umi';
 import './style.less';
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Sider } = Layout;
 const { Option } = Select;
 
 const x = (name: string) => {
@@ -80,6 +80,11 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
                   type: 'editorModel/add',
                   payload: editorModel.treeData,
                 });
+              dispatch &&
+                dispatch({
+                  type: 'editorModel/saveCatalog',
+                  payload: editorModel.treeData,
+                });
             }}
           />
         </div>
@@ -88,11 +93,11 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
             selectedKeys,
             { selected: bool, selectedNodes, node, event },
           ) => {
-            const { fileKey, key } = node as any;
+            const { fileKey, key, title } = node as any;
             dispatch &&
               dispatch({
-                type: 'editorModel/load',
-                payload: fileKey,
+                type: 'editorModel/loadText',
+                payload: node,
               });
             setX({
               value: key,
@@ -173,14 +178,26 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
       </Sider>
       <Layout>
         <Header className="editor-title">
-          <Input
-            placeholder="请输入标题"
-            bordered={false}
-            size="large"
-            style={{
-              fontSize: '30px',
-              lineHeight: '60px',
-              padding: '0 0',
+          <EditorTitle
+            key={x ? x.value : ''}
+            title={editorModel.currentTitle}
+            onChange={(e) => {
+              const { value } = e.target;
+              dispatch &&
+                dispatch({
+                  type: 'editorModel/updateCatalog',
+                  payload: {
+                    key: editorModel.currentKey,
+                    title: value,
+                  },
+                });
+            }}
+            onBlur={(e) => {
+              dispatch &&
+                dispatch({
+                  type: 'editorModel/saveCatalog',
+                  payload: editorModel.treeData,
+                });
             }}
           />
         </Header>
