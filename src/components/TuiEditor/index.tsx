@@ -6,6 +6,7 @@ import 'codemirror/lib/codemirror.css';
 export default (props: {
   value: string;
   key: string;
+  height?: string;
   blur?: (md: string) => void;
 }) => {
   const editorRef: any = useRef(null);
@@ -14,7 +15,7 @@ export default (props: {
       <Editor
         previewStyle="vertical"
         initialValue={props.value}
-        height="calc(100vh - 60px)"
+        height={props.height}
         initialEditType="markdown"
         usageStatistics={false}
         useCommandShortcut={false}

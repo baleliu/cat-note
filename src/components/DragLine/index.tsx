@@ -6,6 +6,7 @@ interface DragLineProps {
   boundStart: number;
   boundWidth: string;
   children?: any;
+  height: string;
   onDrag?: (x: number) => void;
 }
 
@@ -17,6 +18,7 @@ export default (prop: DragLineProps) => {
         style={{
           marginLeft: prop.boundStart + 'px',
           width: prop.boundWidth,
+          height: prop.height,
         }}
       >
         <Rnd
@@ -32,7 +34,7 @@ export default (prop: DragLineProps) => {
             x: 0,
             y: 0,
             width: 1,
-            height: '100vh',
+            height: '100%',
           }}
           bounds="parent"
         ></Rnd>

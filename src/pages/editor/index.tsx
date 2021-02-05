@@ -30,19 +30,20 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
   const [showSiderWidth, setShowSiderWidth] = useState<{
     siderWidth: string;
   }>({
-    siderWidth: '300px',
+    siderWidth: '200px',
   });
 
   return (
     <Layout className="layout">
       <DragLine
-        boundStart={300}
+        boundStart={200}
         onDrag={(x: number) => {
           setShowSiderWidth({
-            siderWidth: 300 + x + 'px',
+            siderWidth: 200 + x + 'px',
           });
         }}
-        boundWidth="200px"
+        height="calc(100vh - 20px)"
+        boundWidth="150px"
       ></DragLine>
       <Sider
         width={showSiderWidth.siderWidth}
@@ -204,10 +205,11 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
         <Content
           style={{
             padding: '0 0px',
-            height: 'calc(100vh - 60px)',
+            height: 'calc(100vh - 80px)',
           }}
         >
           <TuiEditor
+            height="calc(100vh - 80px)"
             value={editorModel.currentText}
             key={x ? x.value : ''}
             blur={(text) => {

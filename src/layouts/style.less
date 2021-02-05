@@ -1,26 +1,53 @@
-.navSider {
-  // border: 2px solid red;
-  height: '100vh';
-  position: fixed;
-  overflow: 'auto';
-  -webkit-app-region: drag;
-  min-width: 66px !important;
-  width: 66px !important;
-  .ant-layout-sider-children {
-    height: 100vh;
-    background-color: gray;
+@nav-sider-height: calc(100vh - 66px);
+@nav-sider-background-color: gray;
+.layout-container {
+  .nav-sider {
+    // border: 2px solid red;
+    height: @nav-sider-height;
+    position: fixed;
+    overflow: 'auto';
+    -webkit-app-region: drag;
+    min-width: 66px !important;
+    width: 66px !important;
+    .ant-layout-sider-children {
+      height: @nav-sider-height;
+      background-color: @nav-sider-background-color;
+      width: 66px;
+    }
+    .ant-menu-inline-collapsed {
+      width: 66px;
+      border: 0px;
+      background-color: @nav-sider-background-color;
+    }
+    .ant-menu-inline-collapsed:hover {
+      background-color: @nav-sider-background-color;
+    }
+    .ant-menu-item-selected {
+      background-color: @nav-sider-background-color !important;
+      color: white;
+    }
+  }
+  .ant-layout-footer {
+    padding: 0 0;
+    min-height: 20px;
+    max-height: 20px;
+  }
+  .global-footer {
+    background-color: cadetblue;
+  }
+  .setting-container {
+    background-color: @nav-sider-background-color;
+    z-index: 998;
+    top: @nav-sider-height;
     width: 66px;
-  }
-  .ant-menu-inline-collapsed {
-    width: 66px;
-    border: 0px;
-    background-color: gray;
-  }
-  .ant-menu-inline-collapsed:hover {
-    background-color: gray;
-  }
-  .ant-menu-item-selected {
-    background-color: gray !important;
-    color: white;
+    height: 66px;
+    position: fixed;
+    .setting-icon {
+      z-index: 999;
+      top: @nav-sider-height;
+      left: 0;
+      margin: 17px;
+      position: fixed;
+    }
   }
 }
