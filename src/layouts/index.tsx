@@ -77,7 +77,9 @@ const GlobalLayout = ({
               {/* <Avatar className="setting-icon" icon={<SettingFilled />} /> */}
               <SettingBtn
                 onClick={() => {
-                  alert('todo setting');
+                  dispatch({
+                    type: 'globalLayout/settingMenu',
+                  });
                 }}
               />
             </div>
@@ -98,17 +100,6 @@ const GlobalLayout = ({
                 icon={<DownCircleOutlined />}
               >
                 应用菜单
-              </Menu.Item>
-              <Menu.Item
-                key="2"
-                onClick={() => {
-                  dispatch({
-                    type: 'globalLayout/openDevTools',
-                  });
-                }}
-                icon={<DesktopOutlined />}
-              >
-                打开控制台
               </Menu.Item>
               <Menu.Item
                 key="3"

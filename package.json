@@ -1,9 +1,10 @@
 {
+  "name": "cat-note",
   "private": true,
-  "name": "demo",
   "version": "0.0.1",
   "build": {
     "appId": "cn.net.bale",
+    "productName": "cat-note",
     "mac": {
       "category": "cn.net.bale.category.note"
     },
@@ -27,11 +28,14 @@
     "asar": true
   },
   "electronWebpack": {
+    "title": true,
     "commonSourceDirectory": "src/common",
     "staticSourceDirectory": "src/static",
     "main": {
       "sourceDirectory": "src/main",
-      "extraEntries": ["@/preload.js"]
+      "extraEntries": [
+        "@/preload.js"
+      ]
     },
     "renderer": {
       "sourceDirectory": null

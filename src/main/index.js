@@ -1,20 +1,16 @@
 'use strict';
 
-// import { app, BrowserWindow, ipcMain } from 'electron';
-
-const { app, BrowserWindow, ipcMain } = require('electron');
-import Store from 'electron-store';
-
+const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 import * as path from 'path';
 import './store';
+import { settingMenu } from './menu';
 import { format } from 'url';
 import os from 'os';
 import fs from 'fs';
-const store = new Store();
 
 // 操作系统类型
 console.log(os.type());
-
+const isMac = process.platform === 'darwin';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
@@ -95,8 +91,8 @@ function createMainWindow() {
 
   // a标签 动作 https://www.electronjs.org/docs/api/web-contents#event-will-navigate
   window.webContents.on('will-navigate', (event, url) => {
-    // event.preventDefault();
-    // console.log(url);
+    event.preventDefault();
+    console.log(url);
   });
 
   // 隐藏窗口的菜单栏
@@ -129,8 +125,11 @@ ipcMain.on('forward', (event, arg) => {
   mainWindow.loadURL(arg);
 });
 
-ipcMain.on('open-dev-tools', () => {
-  mainWindow.webContents.openDevTools();
+Menu.setApplicationMenu(settingMenu);
+ipcMain.on('setting-menu', () => {
+  settingMenu.popup({
+    window: mainWindow,
+  });
 });
 
 ipcMain.on('write-file', (event, arg) => {
@@ -147,15 +146,6 @@ ipcMain.on('write-file', (event, arg) => {
     if (err) throw err;
     console.log('文件已被保存');
   });
-});
-
-ipcMain.on('db-set', (event, arg) => {
-  store.set(arg.key, arg.value);
-});
-
-ipcMain.on('db-get', (event, arg) => {
-  let value = store.get(arg);
-  event.returnValue = value;
 });
 
 ipcMain.on('read-file', (event, arg) => {

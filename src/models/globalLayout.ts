@@ -12,7 +12,7 @@ export interface GlobalLayoutModelType {
   effects: {};
   reducers: {
     load: ImmerReducer<GlobalLayoutModelState>;
-    openDevTools: ImmerReducer<GlobalLayoutModelState>;
+    settingMenu: ImmerReducer<GlobalLayoutModelState>;
   };
   subscriptions: { setup: Subscription };
 }
@@ -28,8 +28,8 @@ const GlobalLayoutModel: GlobalLayoutModelType = {
       state.name = action.payload;
       window.api.forward(action.payload);
     },
-    openDevTools() {
-      window.api.openDevTools();
+    settingMenu() {
+      window.api.settingMenu();
     },
   },
   subscriptions: {

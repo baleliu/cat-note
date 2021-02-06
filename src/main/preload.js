@@ -1,13 +1,8 @@
-// All of the Node.js APIs are available in the preload process.
-// It has the same sandbox as a Chrome extension.
+'use strict';
 
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, remote } = require('electron');
 const FileService = require('./service/FileService');
-const Store = require('electron-store');
-const store = new Store();
 
-store.set('liu', 'wentao');
-console.log(store.get('liu'));
 // import { contextBridge } from 'electron'
 
 // window.addEventListener('DOMContentLoaded', () => {
@@ -37,8 +32,8 @@ contextBridge.exposeInMainWorld('api', {
     console.log(url);
     ipcRenderer.send('forward', url);
   },
-  openDevTools: () => {
-    ipcRenderer.send('open-dev-tools');
+  settingMenu: () => {
+    ipcRenderer.send('setting-menu');
   },
   db: {
     get: (k) => {
