@@ -19,7 +19,8 @@
       ]
     },
     "directories": {
-      "output": "target"
+      "output": "target",
+      "buildResources" : "build"
     },
     "files": [
       "dist/**/*",
