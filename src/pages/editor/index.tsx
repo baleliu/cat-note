@@ -205,6 +205,7 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
         <Content
           style={{
             padding: '0 0px',
+            marginLeft: '3px',
             height: 'calc(100vh - 80px)',
           }}
         >

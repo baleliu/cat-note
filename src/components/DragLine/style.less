@@ -1,13 +1,18 @@
+@drag-line-hover-border: 2px solid @primary-bk-color;
+
 .drag-line-parent {
-  // border: 1px solid red;
+  position: fixed;
+  .drag-line:hover {
+    border-left: @drag-line-hover-border;
+    border-right: @drag-line-hover-border;
+  }
+}
+
+.drag-line-parent:hover {
   position: fixed;
   z-index: 999;
-  .drag-line {
-    border-left: 1px solid gray;
-    z-index: 999 !important;
-  }
   .drag-line:hover {
-    border-left: 3px solid gray;
-    z-index: 999;
+    border-left: @drag-line-hover-border;
+    border-right: @drag-line-hover-border;
   }
 }

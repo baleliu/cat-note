@@ -2,16 +2,18 @@ import React, { useRef } from 'react';
 import { Editor } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import 'codemirror/lib/codemirror.css';
+import './style.less';
 
 export default (props: {
   value: string;
   key: string;
+  style?: any;
   height?: string;
   blur?: (md: string) => void;
 }) => {
   const editorRef: any = useRef(null);
   return (
-    <div>
+    <div style={props.style}>
       <Editor
         previewStyle="vertical"
         initialValue={props.value}

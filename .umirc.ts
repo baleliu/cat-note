@@ -20,4 +20,8 @@ export default defineConfig({
     immer: true,
     hmr: false,
   },
+  theme: {
+    '@primary-color': '#1f7688d7',
+    '@primary-bk-color': '#333333',
+  },
 });

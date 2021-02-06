@@ -1,4 +1,5 @@
 import fs from 'fs';
+import * as path from 'path';
 const { app, ipcMain } = require('electron');
 
 ipcMain.on('write-file', (event, arg) => {

@@ -11,7 +11,7 @@ const template = [
       { type: 'separator' },
       { role: 'toggleDevTools', label: '控制台' },
       { type: 'separator' },
-      { role: 'resetZoom', label: '重制大小' },
+      { role: 'resetZoom', label: '重置大小' },
       { role: 'zoomIn', label: '放大' },
       { role: 'zoomOut', label: '缩小' },
     ],

@@ -2,9 +2,9 @@
 
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 import * as path from 'path';
-import './core/store';
-import './core/file';
-import { settingMenu } from './core/menu';
+import './service/store';
+import './service/file';
+import { settingMenu } from './service/menu';
 import { format } from 'url';
 import os from 'os';
 

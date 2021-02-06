@@ -29,7 +29,6 @@ const FileService = require('./api/FileController');
 contextBridge.exposeInMainWorld('api', {
   file: FileService.file,
   forward: (url) => {
-    console.log(url);
     ipcRenderer.send('forward', url);
   },
   settingMenu: () => {

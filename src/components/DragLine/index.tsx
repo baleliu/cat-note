@@ -1,4 +1,4 @@
-import { DragEventHandler } from 'react';
+import { DragEventHandler, useState } from 'react';
 import { Rnd } from 'react-rnd';
 import './style.less';
 
@@ -6,8 +6,10 @@ interface DragLineProps {
   boundStart: number;
   boundWidth: string;
   children?: any;
+  zIndex?: number;
   height: string;
   onDrag?: (x: number) => void;
+  onDragStart?: () => void;
 }
 
 export default (prop: DragLineProps) => {
@@ -19,21 +21,26 @@ export default (prop: DragLineProps) => {
           marginLeft: prop.boundStart + 'px',
           width: prop.boundWidth,
           height: prop.height,
+          // zIndex: prop.zIndex,
         }}
       >
         <Rnd
           className="drag-line"
           enableResizing={false}
+          // style ={{
+          //   border: '1px solid black'
+          // }}
           dragAxis="x"
           onDragStop={(e, data) => {
-            if (prop.onDrag) {
-              prop.onDrag(data.x);
-            }
+            prop.onDrag && prop.onDrag(data.x);
+          }}
+          onDragStart={() => {
+            prop.onDragStart && prop.onDragStart();
           }}
           default={{
             x: 0,
             y: 0,
-            width: 1,
+            width: 2,
             height: '100%',
           }}
           bounds="parent"
