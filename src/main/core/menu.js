@@ -1,6 +1,6 @@
 'use strict';
 
-const { app, BrowserWindow, ipcMain, Menu } = require('electron');
+const { Menu } = require('electron');
 
 const template = [
   {

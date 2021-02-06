@@ -2,17 +2,18 @@
 
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 import * as path from 'path';
-import './store';
-import { settingMenu } from './menu';
+import './core/store';
+import './core/file';
+import { settingMenu } from './core/menu';
 import { format } from 'url';
 import os from 'os';
-import fs from 'fs';
 
 // 操作系统类型
 console.log(os.type());
 const isMac = process.platform === 'darwin';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
+Menu.setApplicationMenu(settingMenu);
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow;
 
@@ -125,40 +126,8 @@ ipcMain.on('forward', (event, arg) => {
   mainWindow.loadURL(arg);
 });
 
-Menu.setApplicationMenu(settingMenu);
 ipcMain.on('setting-menu', () => {
   settingMenu.popup({
     window: mainWindow,
   });
-});
-
-ipcMain.on('write-file', (event, arg) => {
-  let dir = path.join(app.getPath('userData'), arg.tag ? arg.tag : 'default');
-  try {
-    let stat = fs.statSync(dir);
-    if (!stat.isDirectory()) {
-      fs.mkdirSync(dir);
-    }
-  } catch (e) {
-    fs.mkdirSync(dir);
-  }
-  fs.writeFile(path.join(dir, arg.fileKey), arg.data, (err) => {
-    if (err) throw err;
-    console.log('文件已被保存');
-  });
-});
-
-ipcMain.on('read-file', (event, arg) => {
-  try {
-    event.returnValue = fs.readFileSync(
-      path.join(
-        path.join(app.getPath('userData'), arg.tag ? arg.tag : 'default'),
-        arg.fileKey,
-      ),
-      'utf8',
-    );
-  } catch (e) {
-    console.log(e);
-    event.returnValue = '';
-  }
 });

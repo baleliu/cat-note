@@ -1,7 +1,7 @@
 'use strict';
 
 const { contextBridge, ipcRenderer, remote } = require('electron');
-const FileService = require('./service/FileService');
+const FileService = require('./api/FileController');
 
 // import { contextBridge } from 'electron'
 

@@ -1,4 +1,3 @@
-const fs = require('fs');
 const { ipcRenderer } = require('electron');
 
 exports.file = {
