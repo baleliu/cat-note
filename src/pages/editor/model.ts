@@ -19,18 +19,39 @@ export interface IndexModelType {
   namespace: 'editorModel';
   state: IndexModelState;
   effects: {
-    query: Effect;
+    _createCatalog: Effect;
+    _updateCatalog: Effect;
+    _deleteCatalog: Effect;
   };
   reducers: {
     save: ImmerReducer<IndexModelState>;
     loadText: ImmerReducer<IndexModelState>;
-    add: ImmerReducer<IndexModelState>;
+    createCatalog: ImmerReducer<IndexModelState>;
+    deleteCatalog: ImmerReducer<IndexModelState>;
     loadCatalog: ImmerReducer<IndexModelState>;
     updateCatalog: ImmerReducer<IndexModelState>;
-    saveCatalog: ImmerReducer<IndexModelState>;
   };
   subscriptions: { setup: Subscription };
 }
+
+const findNode = (
+  tree: CatalogNode[],
+  key: string,
+  callback: (node: CatalogNode, subTree: CatalogNode[], index: number) => void,
+) => {
+  for (let i in tree) {
+    const node = tree[i];
+    if (node.key === key) {
+      callback(node, tree, Number(i));
+      return;
+    }
+    node.children && findNode(node.children, key, callback);
+  }
+};
+
+const storeCatalog = (treeData: any) => {
+  window.api.db.set('catalog', treeData);
+};
 
 const IndexModel: IndexModelType = {
   namespace: 'editorModel',
@@ -39,13 +60,35 @@ const IndexModel: IndexModelType = {
     treeData: [],
   },
   effects: {
-    // 用于触发action
-    // 用于调用异步逻辑，支持Promise。
-    *query({ payload }, { call, put }) {
+    *_createCatalog({ payload }, { call, put, select }) {
       yield put({
-        type: 'save',
+        type: 'createCatalog',
         payload: payload,
       });
+      const treeData = yield select((state: any) => {
+        return state.editorModel.treeData;
+      });
+      storeCatalog(treeData);
+    },
+    *_updateCatalog({ payload }, { call, put, select }) {
+      yield put({
+        type: 'updateCatalog',
+        payload: payload,
+      });
+      const treeData = yield select((state: any) => {
+        return state.editorModel.treeData;
+      });
+      storeCatalog(treeData);
+    },
+    *_deleteCatalog({ payload }, { call, put, select }) {
+      yield put({
+        type: 'deleteCatalog',
+        payload: payload,
+      });
+      const treeData = yield select((state: any) => {
+        return state.editorModel.treeData;
+      });
+      storeCatalog(treeData);
     },
   },
   reducers: {
@@ -72,40 +115,35 @@ const IndexModel: IndexModelType = {
       catalog && (state.treeData = catalog);
     },
     updateCatalog(state, action) {
-      let catalog = window.api.db.get('catalog');
       let { key, title } = action.payload;
-      catalog && (state.treeData = catalog);
-      const findNode = (
-        tree: CatalogNode[],
-        callback: (node: CatalogNode) => void,
-      ) => {
-        for (let i in tree) {
-          const node = tree[i];
-          if (node.key === key) {
-            callback(node);
-            return;
-          }
-          node.children && findNode(node.children, callback);
-        }
-      };
-      findNode(state.treeData, (node) => {
+      findNode(state.treeData, key, (node) => {
         node.title = title;
       });
     },
-    add(state, action) {
-      const key = uuid.v4();
+    createCatalog(state, action) {
+      const newKey = uuid.v4();
       const newTitle = '新建文档';
       const newTreeNode = {
         title: newTitle,
-        key: key,
-        fileKey: key,
+        key: newKey,
+        fileKey: newKey,
       };
-      state.treeData.push(newTreeNode);
-      let treeData: CatalogNode[] = [...action.payload];
-      treeData.push(newTreeNode);
+      if (action.payload) {
+        findNode(state.treeData, action.payload, (node) => {
+          if (node.children) {
+            node.children.push(newTreeNode);
+          } else {
+            node.children = [newTreeNode];
+          }
+        });
+      } else {
+        state.treeData.push(newTreeNode);
+      }
     },
-    saveCatalog(state, action) {
-      window.api.db.set('catalog', action.payload);
+    deleteCatalog(state, action) {
+      findNode(state.treeData, action.payload, (node, subTree, index) => {
+        subTree.splice(index, 1);
+      });
     },
   },
   subscriptions: {

@@ -1,15 +1,20 @@
 import DragLine from '@/components/DragLine';
 import TuiEditor from '@/components/TuiEditor';
 import EditorTitle from '@/components/EditorTitle';
-import { CarryOutOutlined, PlusSquareOutlined } from '@ant-design/icons';
+import {
+  CarryOutOutlined,
+  PlusSquareOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons';
 
-import { Input, Layout, Select, Tree } from 'antd';
+import { Modal, Layout, Select, Tree, Menu, Dropdown } from 'antd';
 import React, { FC, useRef, useState } from 'react';
 import { connect, ConnectProps, IndexModelState, Loading } from 'umi';
 import './style.less';
 
 const { Header, Content, Sider } = Layout;
 const { Option } = Select;
+const { confirm } = Modal;
 
 const x = (name: string) => {
   switch (name) {
@@ -32,7 +37,13 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
   }>({
     siderWidth: '200px',
   });
-
+  const addCatalog = (key?: any) => {
+    dispatch &&
+      dispatch({
+        type: 'editorModel/_createCatalog',
+        payload: key,
+      });
+  };
   return (
     <Layout className="layout">
       <DragLine
@@ -76,16 +87,7 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
               width: '100%',
             }}
             onClick={() => {
-              dispatch &&
-                dispatch({
-                  type: 'editorModel/add',
-                  payload: editorModel.treeData,
-                });
-              dispatch &&
-                dispatch({
-                  type: 'editorModel/saveCatalog',
-                  payload: editorModel.treeData,
-                });
+              addCatalog();
             }}
           />
         </div>
@@ -104,72 +106,53 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
               value: key,
             });
           }}
+          titleRender={(node) => {
+            return (
+              <Dropdown
+                overlay={
+                  <Menu>
+                    <Menu.Item
+                      onClick={() => {
+                        addCatalog(node.key);
+                      }}
+                      key="1"
+                    >
+                      添加子文档
+                    </Menu.Item>
+                    <Menu.Item
+                      onClick={() => {
+                        confirm({
+                          okText: '取消',
+                          cancelText: '删除',
+                          title: `是否删除文档【${node.title}】`,
+                          icon: <ExclamationCircleOutlined />,
+                          // content: 'Some descriptions',
+                          onCancel() {
+                            dispatch &&
+                              dispatch({
+                                type: 'editorModel/_deleteCatalog',
+                                payload: node.key,
+                              });
+                          },
+                        });
+                      }}
+                      key="2"
+                    >
+                      删除
+                    </Menu.Item>
+                  </Menu>
+                }
+                trigger={['contextMenu']}
+              >
+                <div style={{ border: '1px solid black' }}>{node.title}</div>
+              </Dropdown>
+            );
+          }}
           onDragEnd={(info) => {
             // console.log(info);
           }}
           onDrop={(info) => {
             console.log(info);
-            // const dropKey = info.node.key;
-            // const dragKey = info.dragNode.key;
-            // const dropPos = info.node.pos.split('-');
-            // const dropPosition =
-            //   info.dropPosition - Number(dropPos[dropPos.length - 1]);
-            // const loop = (data, key, callback) => {
-            //   for (let i = 0; i < data.length; i++) {
-            //     if (data[i].key === key) {
-            //       return callback(data[i], i, data);
-            //     }
-            //     if (data[i].children) {
-            //       loop(data[i].children, key, callback);
-            //     }
-            //   }
-            // };
-            // const data = [...editorModel.treeData];
-            // // Find dragObject
-            // let dragObj;
-            // loop(data, dragKey, (item, index, arr) => {
-            //   data.splice(index, 1);
-            //   dragObj = item;
-            // });
-
-            // if (!info.dropToGap) {
-            //   // Drop on the content
-            //   loop(data, dropKey, (item) => {
-            //     item.children = item.children || [];
-            //     // where to insert 示例添加到头部，可以是随意位置
-            //     item.children.unshift(dragObj);
-            //   });
-            // } else if (
-            //   (info.node.props.children || []).length > 0 && // Has children
-            //   info.node.props.expanded && // Is expanded
-            //   dropPosition === 1 // On the bottom gap
-            // ) {
-            //   loop(data, dropKey, (item) => {
-            //     item.children = item.children || [];
-            //     // where to insert 示例添加到头部，可以是随意位置
-            //     item.children.unshift(dragObj);
-            //     // in previous version, we use item.children.push(dragObj) to insert the
-            //     // item to the tail of the children
-            //   });
-            // } else {
-            //   let ar;
-            //   let i;
-            //   loop(data, dropKey, (item, index, arr) => {
-            //     ar = arr;
-            //     i = index;
-            //   });
-            //   if (dropPosition === -1) {
-            //     data.splice(i, 0, dragObj);
-            //   } else {
-            //     data.splice(i + 1, 0, dragObj);
-            //   }
-            // }
-            // // dispatch &&
-            // //   dispatch({
-            // //     type: 'editorModel/save',
-            // //     payload: data,
-            // //   });
-            // console.log(data);
           }}
           draggable={true}
           defaultExpandedKeys={['0-0-0-0']}
@@ -186,18 +169,11 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
               const { value } = e.target;
               dispatch &&
                 dispatch({
-                  type: 'editorModel/updateCatalog',
+                  type: 'editorModel/_updateCatalog',
                   payload: {
                     key: editorModel.currentKey,
                     title: value,
                   },
-                });
-            }}
-            onBlur={(e) => {
-              dispatch &&
-                dispatch({
-                  type: 'editorModel/saveCatalog',
-                  payload: editorModel.treeData,
                 });
             }}
           />

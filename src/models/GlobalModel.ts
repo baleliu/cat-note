@@ -1,23 +1,20 @@
-import { Effect, ImmerReducer, Subscription } from 'umi';
+import { ImmerReducer, Subscription } from 'umi';
 
-// const electron = window.require('electron');
-// const { ipcRenderer } = electron;
-
-export interface GlobalLayoutModelState {
+export interface GlobalModelState {
   name: string;
 }
-export interface GlobalLayoutModelType {
+export interface GlobalModelType {
   namespace: 'globalLayout';
-  state: GlobalLayoutModelState;
+  state: GlobalModelState;
   effects: {};
   reducers: {
-    load: ImmerReducer<GlobalLayoutModelState>;
-    settingMenu: ImmerReducer<GlobalLayoutModelState>;
+    load: ImmerReducer<GlobalModelState>;
+    settingMenu: ImmerReducer<GlobalModelState>;
   };
   subscriptions: { setup: Subscription };
 }
 
-const GlobalLayoutModel: GlobalLayoutModelType = {
+const GlobalModel: GlobalModelType = {
   namespace: 'globalLayout',
   state: {
     name: 'http://localhost:8000/#/home',
@@ -25,7 +22,6 @@ const GlobalLayoutModel: GlobalLayoutModelType = {
   effects: {},
   reducers: {
     load(state, action) {
-      state.name = action.payload;
       window.api.forward(action.payload);
     },
     settingMenu() {
@@ -41,4 +37,4 @@ const GlobalLayoutModel: GlobalLayoutModelType = {
   },
 };
 
-export default GlobalLayoutModel;
+export default GlobalModel;

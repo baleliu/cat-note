@@ -1,6 +1,6 @@
-import TuiEditor from '@/components/TuiEditor';
-import React, { useRef } from 'react';
 import { Input } from 'antd';
+import React from 'react';
+import './style.less';
 
 export default (props: {
   key: string;
@@ -10,7 +10,7 @@ export default (props: {
 }) => {
   return (
     <Input
-      placeholder="请输入标题"
+      className="tui-editor-title"
       bordered={false}
       defaultValue={props.title}
       size="large"

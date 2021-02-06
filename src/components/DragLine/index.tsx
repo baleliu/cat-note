@@ -1,4 +1,3 @@
-import { DragEventHandler, useState } from 'react';
 import { Rnd } from 'react-rnd';
 import './style.less';
 
