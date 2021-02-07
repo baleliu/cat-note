@@ -9,7 +9,13 @@ import {
 
 import { Modal, Layout, Select, Tree, Menu, Dropdown } from 'antd';
 import React, { FC, useRef, useState } from 'react';
-import { connect, ConnectProps, IndexModelState, Loading } from 'umi';
+import {
+  connect,
+  ConnectProps,
+  IndexModelState,
+  KbModelState,
+  Loading,
+} from 'umi';
 import './style.less';
 
 const { Header, Content, Sider } = Layout;
@@ -25,10 +31,11 @@ const x = (name: string) => {
 
 interface PageProps extends ConnectProps {
   editorModel: IndexModelState;
+  kbModel: KbModelState;
   loading: boolean;
 }
 
-const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
+const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
   const editorRef: any = React.createRef();
   const categoryRef: any = useRef();
   const [x, setX] = useState<{ value: string }>();
@@ -38,12 +45,14 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
     siderWidth: '200px',
   });
   const addCatalog = (key?: any) => {
+    console.log('key');
     dispatch &&
       dispatch({
         type: 'editorModel/_createCatalog',
         payload: key,
       });
   };
+  console.log(kbModel.data);
   return (
     <Layout className="layout">
       <DragLine
@@ -63,14 +72,28 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
         }}
       >
         <Select
+          onSelect={(id) => {
+            console.log(id);
+            dispatch &&
+              dispatch({
+                type: 'editorModel/loadCatalog',
+                payload: id,
+              });
+          }}
+          defaultValue={kbModel.data[0].id}
           showSearch
           style={{ width: '100%' }}
           placeholder="Select a person"
           optionFilterProp="children"
         >
-          <Option value="kb01">知识库01</Option>
-          <Option value="kb02">知识库02</Option>
-          <Option value="kb03">知识库03</Option>
+          {kbModel.data.map((o) => {
+            console.log(o);
+            return (
+              <Option key={o.id} value={o.id}>
+                {o.name}
+              </Option>
+            );
+          })}
         </Select>
         <div
           style={{
@@ -155,7 +178,7 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
             console.log(info);
           }}
           draggable={true}
-          defaultExpandedKeys={['0-0-0-0']}
+          // defaultExpandedKeys={['0-0-0-0']}
           treeData={editorModel.treeData}
           showIcon={true}
         />
@@ -206,12 +229,15 @@ const IndexPage: FC<PageProps> = ({ editorModel, dispatch }) => {
 export default connect(
   ({
     editorModel,
+    kbModel,
     loading,
   }: {
+    kbModel: KbModelState;
     editorModel: IndexModelState;
     loading: Loading;
   }) => ({
     editorModel,
+    kbModel,
     loading: loading.models.index,
   }),
 )(IndexPage);

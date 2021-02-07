@@ -3,7 +3,7 @@ import Logo from '@/components/Logo';
 import Icon, { DesktopOutlined, DownCircleOutlined } from '@ant-design/icons';
 import { Avatar, Button, Drawer, Input, Layout, Menu } from 'antd';
 import React, { useRef, useState } from 'react';
-import { connect, GlobalModelState, IRouteComponentProps } from 'umi';
+import { connect, GlobalModelState, IRouteComponentProps, history } from 'umi';
 import './style.less';
 const { Header, Footer, Sider, Content } = Layout;
 const { Search } = Input;
@@ -92,11 +92,11 @@ const GlobalLayout = ({
               <Menu.Item
                 key="3"
                 onClick={() => {
-                  alert('todo 创建知识库');
+                  history.push('/kb');
                 }}
                 icon={<DesktopOutlined />}
               >
-                创建知识库
+                知识库管理
               </Menu.Item>
             </Menu>
           </Sider>

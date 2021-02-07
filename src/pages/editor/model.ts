@@ -13,6 +13,7 @@ export interface IndexModelState {
   currentFileKey?: string;
   currentTitle?: string;
   currentKey?: string;
+  currentKb?: string;
   treeData: CatalogNode[];
 }
 export interface IndexModelType {
@@ -49,8 +50,9 @@ const findNode = (
   }
 };
 
-const storeCatalog = (treeData: any) => {
-  window.api.db.set('catalog', treeData);
+const storeCatalog = (data: IndexModelState) => {
+  console.log('catalog.' + data.currentKb);
+  window.api.db.set('catalog.' + data.currentKb, data.treeData);
 };
 
 const IndexModel: IndexModelType = {
@@ -65,36 +67,35 @@ const IndexModel: IndexModelType = {
         type: 'createCatalog',
         payload: payload,
       });
-      const treeData = yield select((state: any) => {
-        return state.editorModel.treeData;
+      const data = yield select((state: any) => {
+        return state.editorModel;
       });
-      storeCatalog(treeData);
+      storeCatalog(data);
     },
     *_updateCatalog({ payload }, { call, put, select }) {
       yield put({
         type: 'updateCatalog',
         payload: payload,
       });
-      const treeData = yield select((state: any) => {
-        return state.editorModel.treeData;
+      const data = yield select((state: any) => {
+        return state.editorModel;
       });
-      storeCatalog(treeData);
+      storeCatalog(data);
     },
     *_deleteCatalog({ payload }, { call, put, select }) {
       yield put({
         type: 'deleteCatalog',
         payload: payload,
       });
-      const treeData = yield select((state: any) => {
-        return state.editorModel.treeData;
+      const data = yield select((state: any) => {
+        return state.editorModel;
       });
-      storeCatalog(treeData);
+      storeCatalog(data);
     },
   },
   reducers: {
     save(state, action) {
       state.currentText = action.payload;
-      console.log(state.currentFileKey);
       state.currentFileKey &&
         window.api.file.writeFile({
           fileKey: state.currentFileKey,
@@ -111,8 +112,13 @@ const IndexModel: IndexModelType = {
         : '';
     },
     loadCatalog(state, action) {
-      let catalog = window.api.db.get('catalog');
-      catalog && (state.treeData = catalog);
+      state.currentKb = action.payload;
+      let catalog = window.api.db.get('catalog.' + action.payload);
+      if (catalog) {
+        state.treeData = catalog;
+      } else {
+        state.treeData = [];
+      }
     },
     updateCatalog(state, action) {
       let { key, title } = action.payload;
@@ -151,14 +157,8 @@ const IndexModel: IndexModelType = {
       return history.listen(({ pathname }) => {
         if (pathname === '/editor') {
           dispatch({
-            type: 'loadCatalog',
+            type: 'kbModel/selectAll',
           });
-          // store.set('category.a', {
-          //   title: 'testTitle',
-          //   fileKey: '/Users/bale/Desktop/index.tsx',
-          // });
-          // console.log(store.get('category.a.title'));
-          // console.log(store.get('category.a.fileKey'));
         }
       });
     },
