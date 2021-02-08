@@ -26,7 +26,11 @@ export interface KbModelType {
 }
 
 const storeKb = (data: any) => {
-  window.api.db.set('kb', data);
+  window.api.db.set('kb', data, 'note');
+};
+
+const getKb = () => {
+  return window.api.db.get('kb', 'note');
 };
 
 const KbModel: KbModelType = {
@@ -58,7 +62,10 @@ const KbModel: KbModelType = {
   },
   reducers: {
     selectAll(state, action) {
-      state.data = window.api.db.get('kb');
+      const data = getKb();
+      if (data[0]) {
+        state.data = data;
+      }
     },
     createOne(state, action) {
       state.data.push({

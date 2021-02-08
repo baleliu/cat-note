@@ -1,6 +1,7 @@
 import fs from 'fs';
 import * as path from 'path';
 const { app, ipcMain } = require('electron');
+const log = require('electron-log');
 
 ipcMain.on('write-file', (event, arg) => {
   let dir = path.join(app.getPath('userData'), arg.tag ? arg.tag : 'default');
@@ -14,7 +15,7 @@ ipcMain.on('write-file', (event, arg) => {
   }
   fs.writeFile(path.join(dir, arg.fileKey), arg.data, (err) => {
     if (err) throw err;
-    console.log('文件已被保存');
+    log.info('文件已被保存');
   });
 });
 

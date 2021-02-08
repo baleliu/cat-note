@@ -31,7 +31,7 @@ const GlobalModel: GlobalModelType = {
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname }) => {
-        console.log(`当前的url ${pathname}`);
+        // console.log(`当前的url ${pathname}`);
       });
     },
   },

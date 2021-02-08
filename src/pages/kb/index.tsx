@@ -91,11 +91,9 @@ const IndexPage: FC<PageProps> = ({ kbModel, dispatch }) => {
             >
               <Input />
             </Form.Item>
-
             <Form.Item label="知识库描述" name="desc">
               <Input.TextArea />
             </Form.Item>
-
             <Form.Item>
               <Button type="primary" htmlType="submit">
                 Submit

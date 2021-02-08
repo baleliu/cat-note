@@ -51,9 +51,13 @@ const findNode = (
 };
 
 const storeCatalog = (data: IndexModelState) => {
-  console.log('catalog.' + data.currentKb);
-  window.api.db.set('catalog.' + data.currentKb, data.treeData);
+  window.api.db.set('catalog.' + data.currentKb, data.treeData, 'note');
 };
+const getCatalog = (key: string) => {
+  return window.api.db.get('catalog.' + key, 'note');
+};
+const writeFile = window.api.file.writeFile;
+const readFileSync = window.api.file.readFileSync;
 
 const IndexModel: IndexModelType = {
   namespace: 'editorModel',
@@ -97,7 +101,7 @@ const IndexModel: IndexModelType = {
     save(state, action) {
       state.currentText = action.payload;
       state.currentFileKey &&
-        window.api.file.writeFile({
+        writeFile({
           fileKey: state.currentFileKey,
           data: state.currentText,
         });
@@ -107,13 +111,13 @@ const IndexModel: IndexModelType = {
       state.currentKey = key;
       state.currentFileKey = fileKey;
       state.currentTitle = title;
-      state.currentText = state.currentFileKey
-        ? window.api.file.readFileSync(fileKey)
-        : '';
+      state.currentText = state.currentFileKey ? readFileSync(fileKey) : '';
     },
     loadCatalog(state, action) {
       state.currentKb = action.payload;
-      let catalog = window.api.db.get('catalog.' + action.payload);
+      let catalog = getCatalog(action.payload);
+      debugger;
+      console.log(catalog);
       if (catalog) {
         state.treeData = catalog;
       } else {

@@ -17,8 +17,6 @@ const GlobalLayout = ({
   globalLayout,
   dispatch,
 }: IRouteComponentProps) => {
-  console.log(globalLayout);
-
   const [visible, setVisible] = useState(false);
   const showDrawer = () => {
     setVisible(true);

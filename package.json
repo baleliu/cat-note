@@ -20,7 +20,7 @@
     },
     "directories": {
       "output": "target",
-      "buildResources" : "build"
+      "buildResources": "build"
     },
     "files": [
       "dist/**/*",
@@ -84,6 +84,7 @@
     "@umijs/test": "^3.3.7",
     "electron": "^11.1.1",
     "electron-builder": "^22.9.1",
+    "electron-log": "^4.3.1",
     "electron-webpack": "^2.8.2",
     "lint-staged": "^10.0.7",
     "prettier": "^2.2.0",

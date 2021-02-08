@@ -8,6 +8,10 @@ import { settingMenu } from './service/menu';
 import { format } from 'url';
 import os from 'os';
 
+const log = require('electron-log');
+log.transports.console.format =
+  '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{level}] [{who}] {text}';
+
 // 操作系统类型
 console.log(os.type());
 const isMac = process.platform === 'darwin';
@@ -113,6 +117,7 @@ app.on('activate', () => {
   // on macOS it is common to re-create a window even after all windows have been closed
   if (mainWindow === null) {
     mainWindow = createMainWindow();
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
   }
 });
 

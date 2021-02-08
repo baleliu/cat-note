@@ -80,7 +80,7 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                 payload: id,
               });
           }}
-          defaultValue={kbModel.data[0].id}
+          defaultValue={kbModel.data[0] && kbModel.data[0].id}
           showSearch
           style={{ width: '100%' }}
           placeholder="Select a person"
