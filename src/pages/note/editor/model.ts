@@ -5,6 +5,7 @@ interface CatalogNode {
   title: string;
   key: string;
   fileKey?: string;
+  editType?: string;
   children?: CatalogNode[];
 }
 
@@ -14,6 +15,7 @@ export interface IndexModelState {
   currentTitle?: string;
   currentKey?: string;
   currentKb?: string;
+  currentEditType: 'markdown' | 'wysiwyg';
   treeData: CatalogNode[];
 }
 export interface IndexModelType {
@@ -31,6 +33,7 @@ export interface IndexModelType {
     deleteCatalog: ImmerReducer<IndexModelState>;
     loadCatalog: ImmerReducer<IndexModelState>;
     updateCatalog: ImmerReducer<IndexModelState>;
+    toggleEditType: ImmerReducer<IndexModelState>;
   };
   subscriptions: { setup: Subscription };
 }
@@ -64,6 +67,7 @@ const IndexModel: IndexModelType = {
   state: {
     currentText: '',
     treeData: [],
+    currentEditType: 'wysiwyg',
   },
   effects: {
     *_createCatalog({ payload }, { call, put, select }) {
@@ -106,18 +110,29 @@ const IndexModel: IndexModelType = {
           data: state.currentText,
         });
     },
+    toggleEditType(state, action) {
+      console.log('切换');
+      if (state.currentEditType === 'markdown') {
+        state.currentEditType = 'wysiwyg';
+      } else {
+        state.currentEditType = 'markdown';
+      }
+    },
     loadText(state, action) {
-      const { fileKey, title, key } = action.payload;
+      const { fileKey, title, key, editType } = action.payload;
       state.currentKey = key;
       state.currentFileKey = fileKey;
       state.currentTitle = title;
-      state.currentText = state.currentFileKey ? readFileSync(fileKey) : '';
+      if (editType) {
+        state.currentEditType = editType;
+      } else {
+        state.currentEditType = 'wysiwyg';
+      }
+      state.currentText = state.currentFileKey ? readFileSync({ fileKey }) : '';
     },
     loadCatalog(state, action) {
       state.currentKb = action.payload;
       let catalog = getCatalog(action.payload);
-      debugger;
-      console.log(catalog);
       if (catalog) {
         state.treeData = catalog;
       } else {
@@ -125,9 +140,14 @@ const IndexModel: IndexModelType = {
       }
     },
     updateCatalog(state, action) {
-      let { key, title } = action.payload;
+      let { key, title, editType } = action.payload;
       findNode(state.treeData, key, (node) => {
-        node.title = title;
+        if (title) {
+          node.title = title;
+        }
+        if (editType) {
+          node.editType = editType;
+        }
       });
     },
     createCatalog(state, action) {
@@ -137,6 +157,7 @@ const IndexModel: IndexModelType = {
         title: newTitle,
         key: newKey,
         fileKey: newKey,
+        editType: 'wysiwyg',
       };
       if (action.payload) {
         findNode(state.treeData, action.payload, (node) => {
@@ -159,7 +180,7 @@ const IndexModel: IndexModelType = {
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname }) => {
-        if (pathname === '/editor') {
+        if (pathname === '/note/editor') {
           dispatch({
             type: 'kbModel/selectAll',
           });

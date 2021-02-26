@@ -20,7 +20,6 @@ export default (prop: DragLineProps) => {
           marginLeft: prop.boundStart + 'px',
           width: prop.boundWidth,
           height: prop.height,
-          // zIndex: prop.zIndex,
         }}
       >
         <Rnd

@@ -10,15 +10,15 @@ import os from 'os';
 
 const log = require('electron-log');
 log.transports.console.format =
-  '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{level}] [{who}] {text}';
+  '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{level}] {text}';
 
 // 操作系统类型
 console.log(os.type());
 const isMac = process.platform === 'darwin';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-Menu.setApplicationMenu(settingMenu);
-// global reference to mainWindow (necessary to prevent window from being garbage collected)
+/// 注册 菜单 会导致部分快捷键失效
+// Menu.setApplicationMenu(settingMenu);
 let mainWindow;
 
 function createMainWindow() {
@@ -36,7 +36,7 @@ function createMainWindow() {
   });
 
   if (isDevelopment) {
-    window.loadURL(`http://localhost:8000/#/editor`);
+    window.loadURL(`http://localhost:8000/#/note/editor`);
     // window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
   } else {
     window.loadURL(
@@ -105,7 +105,7 @@ function createMainWindow() {
   return window;
 }
 
-// quit application when all windows are closed
+// 窗口关闭
 app.on('window-all-closed', () => {
   // on macOS it is common for applications to stay open until the user explicitly quits
   if (process.platform !== 'darwin') {
@@ -113,15 +113,15 @@ app.on('window-all-closed', () => {
   }
 });
 
+// 窗口激活
 app.on('activate', () => {
-  // on macOS it is common to re-create a window even after all windows have been closed
   if (mainWindow === null) {
     mainWindow = createMainWindow();
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   }
 });
 
-// create main BrowserWindow when electron is ready
+// 窗口加载完成
 app.on('ready', () => {
   mainWindow = createMainWindow();
   mainWindow.webContents.openDevTools({ mode: 'detach' });

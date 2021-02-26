@@ -84,7 +84,7 @@ const KbModel: KbModelType = {
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname }) => {
-        if (pathname === '/kb') {
+        if (pathname === '/note/kb') {
           dispatch({
             type: 'selectAll',
           });

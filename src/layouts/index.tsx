@@ -1,22 +1,43 @@
-import SettingBtn from '@/components/SettingBtn';
 import Logo from '@/components/Logo';
-import Icon, { DesktopOutlined, DownCircleOutlined } from '@ant-design/icons';
+import SettingBtn from '@/components/SettingBtn';
+import Icon, {
+  BookOutlined,
+  CarryOutOutlined,
+  CodeSandboxOutlined,
+  EditOutlined,
+  DownCircleOutlined,
+} from '@ant-design/icons';
 import { Avatar, Button, Drawer, Input, Layout, Menu } from 'antd';
 import React, { useRef, useState } from 'react';
-import { connect, GlobalModelState, IRouteComponentProps, history } from 'umi';
+import { connect, GlobalModelState, IRouteComponentProps } from 'umi';
 import './style.less';
 const { Header, Footer, Sider, Content } = Layout;
 const { Search } = Input;
 
+interface GlobalLayoutProps extends IRouteComponentProps {
+  children: any;
+  history: any;
+  globalModel: GlobalModelState;
+  dispatch: any;
+}
+
+const iconSwitch = (code: string) => {
+  switch (code) {
+    case 'BookOutlined':
+      return <BookOutlined />;
+    case 'EditOutlined':
+      return <EditOutlined />;
+    default:
+      return <CodeSandboxOutlined />;
+  }
+};
+
 const GlobalLayout = ({
   children,
-  location,
-  route,
   history,
-  match,
-  globalLayout,
+  globalModel,
   dispatch,
-}: IRouteComponentProps) => {
+}: GlobalLayoutProps) => {
   const [visible, setVisible] = useState(false);
   const showDrawer = () => {
     setVisible(true);
@@ -40,7 +61,7 @@ const GlobalLayout = ({
           }}
           onClick={() => {
             dispatch({
-              type: 'globalLayout/load',
+              type: 'globalModel/load',
               payload: 'http://localhost:8000/#/editor',
             });
           }}
@@ -55,7 +76,7 @@ const GlobalLayout = ({
           onPressEnter={() => {
             const { value } = inputRef.current.state;
             dispatch({
-              type: 'globalLayout/load',
+              type: 'globalModel/load',
               payload: value,
             });
           }}
@@ -68,7 +89,7 @@ const GlobalLayout = ({
               <SettingBtn
                 onClick={() => {
                   dispatch({
-                    type: 'globalLayout/settingMenu',
+                    type: 'globalModel/settingMenu',
                   });
                 }}
               />
@@ -87,15 +108,19 @@ const GlobalLayout = ({
               >
                 应用菜单
               </Menu.Item>
-              <Menu.Item
-                key="3"
-                onClick={() => {
-                  history.push('/kb');
-                }}
-                icon={<DesktopOutlined />}
-              >
-                知识库管理
-              </Menu.Item>
+              {globalModel.bars.map((o) => {
+                return (
+                  <Menu.Item
+                    key={o.id}
+                    onClick={() => {
+                      history.push(o.route);
+                    }}
+                    icon={iconSwitch(o.icon)}
+                  >
+                    {o.name}
+                  </Menu.Item>
+                );
+              })}
             </Menu>
           </Sider>
           <Layout
@@ -112,10 +137,8 @@ const GlobalLayout = ({
   );
 };
 
-export default connect(
-  ({ globalLayout }: { globalLayout: GlobalModelState }) => {
-    return {
-      globalLayout,
-    };
-  },
-)(GlobalLayout);
+export default connect(({ globalModel }: { globalModel: GlobalModelState }) => {
+  return {
+    globalModel,
+  };
+})(GlobalLayout);

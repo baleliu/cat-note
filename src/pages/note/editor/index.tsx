@@ -1,13 +1,12 @@
 import DragLine from '@/components/DragLine';
-import TuiEditor from '@/components/TuiEditor';
 import EditorTitle from '@/components/EditorTitle';
+import TuiEditor, { htmlToMarkdown } from '@/components/TuiEditor';
+import uuid from 'uuid';
 import {
-  CarryOutOutlined,
-  PlusSquareOutlined,
   ExclamationCircleOutlined,
+  PlusSquareOutlined,
 } from '@ant-design/icons';
-
-import { Modal, Layout, Select, Tree, Menu, Dropdown } from 'antd';
+import { Dropdown, Layout, Menu, Modal, Select, Tree } from 'antd';
 import React, { FC, useRef, useState } from 'react';
 import {
   connect,
@@ -17,17 +16,9 @@ import {
   Loading,
 } from 'umi';
 import './style.less';
-
 const { Header, Content, Sider } = Layout;
 const { Option } = Select;
 const { confirm } = Modal;
-
-const x = (name: string) => {
-  switch (name) {
-    case 'CarryOutOutlined':
-      return <CarryOutOutlined />;
-  }
-};
 
 interface PageProps extends ConnectProps {
   editorModel: IndexModelState;
@@ -38,21 +29,21 @@ interface PageProps extends ConnectProps {
 const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
   const editorRef: any = React.createRef();
   const categoryRef: any = useRef();
-  const [x, setX] = useState<{ value: string }>();
+  const [editKey, setEditKey] = useState<string>();
   const [showSiderWidth, setShowSiderWidth] = useState<{
     siderWidth: string;
   }>({
     siderWidth: '200px',
   });
   const addCatalog = (key?: any) => {
-    console.log('key');
     dispatch &&
       dispatch({
         type: 'editorModel/_createCatalog',
         payload: key,
       });
   };
-  console.log(kbModel.data);
+
+  const changeMode = (instance, mode, isWithoutFocus) => {};
   return (
     <Layout className="layout">
       <DragLine
@@ -73,7 +64,6 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
       >
         <Select
           onSelect={(id) => {
-            console.log(id);
             dispatch &&
               dispatch({
                 type: 'editorModel/loadCatalog',
@@ -87,7 +77,6 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
           optionFilterProp="children"
         >
           {kbModel.data.map((o) => {
-            console.log(o);
             return (
               <Option key={o.id} value={o.id}>
                 {o.name}
@@ -125,32 +114,25 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                 type: 'editorModel/loadText',
                 payload: node,
               });
-            setX({
-              value: key,
-            });
+            setEditKey(key);
           }}
           titleRender={(node) => {
             return (
               <Dropdown
                 overlay={
                   <Menu>
-                    <Menu.Item
-                      onClick={() => {
-                        addCatalog(node.key);
-                      }}
-                      key="1"
-                    >
+                    <Menu.Item onClick={() => {}} key="1">
                       添加子文档
                     </Menu.Item>
                     <Menu.Item
                       onClick={() => {
                         confirm({
-                          okText: '取消',
-                          cancelText: '删除',
+                          okText: '删除',
+                          cancelText: '取消',
                           title: `是否删除文档【${node.title}】`,
                           icon: <ExclamationCircleOutlined />,
                           // content: 'Some descriptions',
-                          onCancel() {
+                          onOk() {
                             dispatch &&
                               dispatch({
                                 type: 'editorModel/_deleteCatalog',
@@ -163,6 +145,36 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                     >
                       删除
                     </Menu.Item>
+                    {node.key === editorModel.currentKey && (
+                      <Menu.Item
+                        onClick={() => {
+                          let currentNode: any = node;
+                          let mode = 'markdown';
+                          if (currentNode.editType === 'markdown') {
+                            mode = 'wysiwyg';
+                          }
+                          dispatch &&
+                            dispatch({
+                              type: 'editorModel/_updateCatalog',
+                              payload: {
+                                key: currentNode.key,
+                                editType: mode,
+                              },
+                            });
+                          if (editorModel.currentKey === node.key) {
+                            changeMode(
+                              editorRef.current.getInstance(),
+                              mode,
+                              true,
+                            );
+                          }
+                        }}
+                        key="3"
+                      >
+                        切换编辑器模式
+                      </Menu.Item>
+                    )}
+                    {console.log(node.key === editorModel.currentKey)}
                   </Menu>
                 }
                 trigger={['contextMenu']}
@@ -171,14 +183,11 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
               </Dropdown>
             );
           }}
-          onDragEnd={(info) => {
-            // console.log(info);
-          }}
+          onDragEnd={(info) => {}}
           onDrop={(info) => {
             console.log(info);
           }}
           draggable={true}
-          // defaultExpandedKeys={['0-0-0-0']}
           treeData={editorModel.treeData}
           showIcon={true}
         />
@@ -186,7 +195,7 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
       <Layout>
         <Header className="editor-title">
           <EditorTitle
-            key={x ? x.value : ''}
+            key={editKey ? editKey : ''}
             title={editorModel.currentTitle}
             onChange={(e) => {
               const { value } = e.target;
@@ -211,7 +220,10 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
           <TuiEditor
             height="calc(100vh - 80px)"
             value={editorModel.currentText}
-            key={x ? x.value : ''}
+            instanceRef={editorRef}
+            key={editKey ? editKey : ''}
+            fileKey={editorModel.currentFileKey}
+            editType={editorModel.currentEditType}
             blur={(text) => {
               dispatch &&
                 dispatch({

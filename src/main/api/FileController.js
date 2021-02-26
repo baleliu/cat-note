@@ -1,11 +1,11 @@
 const { ipcRenderer } = require('electron');
 
 exports.file = {
-  readFileSync: (fileKey, tag) => {
-    return ipcRenderer.sendSync('read-file', {
-      fileKey: fileKey,
-      tag: tag,
-    });
+  readFileSync: (options) => {
+    return ipcRenderer.sendSync('read-file-sync', options);
+  },
+  writeFileSync: (options) => {
+    return ipcRenderer.sendSync('write-file-sync', options);
   },
   writeFile: (options) => {
     ipcRenderer.send('write-file', options);

@@ -47,7 +47,6 @@ const IndexPage: FC<PageProps> = ({ kbModel, dispatch }) => {
   };
 
   const onFinish = (values: any) => {
-    console.log('Success:', values);
     dispatch &&
       dispatch({
         type: 'kbModel/_createOne',
