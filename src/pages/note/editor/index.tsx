@@ -1,7 +1,6 @@
 import DragLine from '@/components/DragLine';
 import EditorTitle from '@/components/EditorTitle';
-import TuiEditor, { htmlToMarkdown } from '@/components/TuiEditor';
-import uuid from 'uuid';
+import TuiEditor, { changeMode } from '@/components/TuiEditor';
 import {
   ExclamationCircleOutlined,
   PlusSquareOutlined,
@@ -43,7 +42,6 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
       });
   };
 
-  const changeMode = (instance, mode, isWithoutFocus) => {};
   return (
     <Layout className="layout">
       <DragLine
@@ -174,7 +172,6 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                         切换编辑器模式
                       </Menu.Item>
                     )}
-                    {console.log(node.key === editorModel.currentKey)}
                   </Menu>
                 }
                 trigger={['contextMenu']}

@@ -1,7 +1,12 @@
-import { Button, Drawer, Form, Input, Table, Space } from 'antd';
+import { Button, Drawer, Form, Input, Table, Space, Modal } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import React, { FC, useRef, useState } from 'react';
 import { connect, ConnectProps, KbModelState } from 'umi';
+import './style.less';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+
+const { confirm } = Modal;
+
 interface PageProps extends ConnectProps {
   kbModel: KbModelState;
 }
@@ -25,19 +30,71 @@ const IndexPage: FC<PageProps> = ({ kbModel, dispatch }) => {
         <Space size="middle">
           <a
             onClick={() => {
-              dispatch &&
-                dispatch({ type: 'kbModel/_deleteOne', payload: record.id });
+              confirm({
+                okText: '删除',
+                cancelText: '取消',
+                title: `是否删除知识库【${record.name}】`,
+                icon: <ExclamationCircleOutlined />,
+                // content: 'Some descriptions',
+                onOk() {
+                  if (dustbin) {
+                    dispatch &&
+                      dispatch({
+                        type: 'kbModel/_deleteDustbinOne',
+                        payload: record.id,
+                      });
+                  } else {
+                    dispatch &&
+                      dispatch({
+                        type: 'kbModel/_deleteOne',
+                        payload: record.id,
+                      });
+                  }
+                },
+              });
             }}
           >
             删除
           </a>
+          {dustbin && (
+            <a
+              onClick={() => {
+                confirm({
+                  okText: '还原',
+                  cancelText: '取消',
+                  title: `是否还原知识库【${record.name}】`,
+                  icon: <ExclamationCircleOutlined />,
+                  onOk() {
+                    if (dispatch) {
+                      dispatch({
+                        type: 'kbModel/_createOne',
+                        payload: record,
+                      });
+                      dispatch({
+                        type: 'kbModel/_deleteDustbinOne',
+                        payload: record.id,
+                      });
+                    }
+                  },
+                });
+              }}
+            >
+              还原
+            </a>
+          )}
         </Space>
       ),
     },
   ];
 
   const [visible, setVisible] = useState(false);
+  const [dustbin, setDustbin] = useState(false);
   const formRef: any = useRef<FormInstance>();
+
+  const toggleDustbin = () => {
+    setDustbin(!dustbin);
+  };
+
   const showDrawer = () => {
     setVisible(true);
   };
@@ -62,13 +119,63 @@ const IndexPage: FC<PageProps> = ({ kbModel, dispatch }) => {
   return (
     <>
       <div>
-        <Button
+        <div
+          style={{
+            float: 'right',
+            position: 'fixed',
+            height: '30px',
+            top: '40px',
+            right: '-87px',
+            width: '300px',
+            zIndex: 999,
+            backgroundColor: 'gray',
+            textAlign: 'center',
+            color: 'white',
+            transform: 'rotate(45deg)',
+            lineHeight: '26px',
+          }}
           onClick={() => {
-            showDrawer();
+            toggleDustbin();
           }}
         >
-          创建知识库
-        </Button>
+          {dustbin ? '返回知识库' : '查看垃圾箱'}
+        </div>
+        <div
+          style={{
+            float: 'right',
+            position: 'fixed',
+            height: '30px',
+            top: '20px',
+            right: '-60px',
+            width: '200px',
+            zIndex: 999,
+            backgroundColor: dustbin ? 'red' : 'green',
+            textAlign: 'center',
+            color: 'white',
+            transform: 'rotate(45deg)',
+            lineHeight: '26px',
+          }}
+          onClick={() => {
+            if (dustbin) {
+              confirm({
+                okText: '删除',
+                cancelText: '取消',
+                title: `是否清空【知识库】垃圾箱`,
+                icon: <ExclamationCircleOutlined />,
+                onOk() {
+                  dispatch &&
+                    dispatch({
+                      type: 'kbModel/clearDustbin',
+                    });
+                },
+              });
+            } else {
+              showDrawer();
+            }
+          }}
+        >
+          {dustbin ? '清空' : '创建知识库'}
+        </div>
         <Drawer
           width="50%"
           placement="right"
@@ -100,13 +207,18 @@ const IndexPage: FC<PageProps> = ({ kbModel, dispatch }) => {
             </Form.Item>
           </Form>
         </Drawer>
+        <Table
+          style={
+            {
+              // border: '1px solid black',
+            }
+          }
+          columns={columns}
+          rowKey="id"
+          dataSource={dustbin ? kbModel.dustbin : kbModel.data}
+          pagination={false}
+        />
       </div>
-      <Table
-        columns={columns}
-        rowKey="id"
-        dataSource={kbModel.data}
-        pagination={false}
-      />
     </>
   );
 };

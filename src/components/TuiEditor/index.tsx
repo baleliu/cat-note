@@ -120,7 +120,6 @@ export default (props: {
   return (
     <div style={props.style}>
       <Editor
-        // vertical/tab
         previewStyle="tab"
         initialValue={props.value}
         height={props.height}

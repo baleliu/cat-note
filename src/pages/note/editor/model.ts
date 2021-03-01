@@ -147,6 +147,7 @@ const IndexModel: IndexModelType = {
         }
         if (editType) {
           node.editType = editType;
+          state.currentEditType = editType;
         }
       });
     },
