@@ -117,14 +117,18 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   if (mainWindow === null) {
     mainWindow = createMainWindow();
-    mainWindow.webContents.openDevTools({ mode: 'detach' });
+    if (isDevelopment) {
+      mainWindow.webContents.openDevTools({ mode: 'detach' });
+    }
   }
 });
 
 // 窗口加载完成
 app.on('ready', () => {
   mainWindow = createMainWindow();
-  mainWindow.webContents.openDevTools({ mode: 'detach' });
+  if (isDevelopment) {
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
+  }
 });
 
 ipcMain.on('forward', (event, arg) => {
