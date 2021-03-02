@@ -95,11 +95,11 @@ const KbModel: KbModelType = {
   reducers: {
     selectAll(state, action) {
       const data = getKb();
-      if (data[0]) {
+      if (data && data[0]) {
         state.data = data;
       }
       const dustbin = getKbDustbin();
-      if (dustbin[0]) {
+      if (dustbin && dustbin[0]) {
         state.dustbin = dustbin;
       }
     },
@@ -135,6 +135,13 @@ const KbModel: KbModelType = {
           dispatch({
             type: 'selectAll',
           });
+          let data = getKb();
+          if (data) {
+            dispatch({
+              type: 'globalModel/updateFooter',
+              payload: `当前有库[${data.length}]`,
+            });
+          }
         }
       });
     },

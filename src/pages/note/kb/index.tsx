@@ -1,7 +1,7 @@
 import { Button, Drawer, Form, Input, Table, Space, Modal } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import React, { FC, useRef, useState } from 'react';
-import { connect, ConnectProps, KbModelState } from 'umi';
+import { connect, ConnectProps, KbModelState, GlobalModelState } from 'umi';
 import './style.less';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 
@@ -14,14 +14,16 @@ interface PageProps extends ConnectProps {
 const IndexPage: FC<PageProps> = ({ kbModel, dispatch }) => {
   const columns = [
     {
-      title: '知识库名称',
+      title: '库名称',
       dataIndex: 'name',
       key: 'name',
+      width: '30%',
     },
     {
-      title: '知识库描述',
+      title: '库描述',
       dataIndex: 'desc',
       key: 'desc',
+      width: '50%',
     },
     {
       title: '操作',
@@ -208,11 +210,15 @@ const IndexPage: FC<PageProps> = ({ kbModel, dispatch }) => {
           </Form>
         </Drawer>
         <Table
-          style={
-            {
-              // border: '1px solid black',
-            }
-          }
+          className="kb-table"
+          scroll={{ y: 'calc(100vh - 132px)' }}
+          style={{
+            border: '1px solid gray',
+            marginTop: '40px',
+            marginLeft: '5px',
+            marginRight: '20px',
+            minHeight: 'calc(100vh - 65px)',
+          }}
           columns={columns}
           rowKey="id"
           dataSource={dustbin ? kbModel.dustbin : kbModel.data}
@@ -223,6 +229,15 @@ const IndexPage: FC<PageProps> = ({ kbModel, dispatch }) => {
   );
 };
 
-export default connect(({ kbModel }: { kbModel: KbModelState }) => ({
-  kbModel,
-}))(IndexPage);
+export default connect(
+  ({
+    kbModel,
+    globalModel,
+  }: {
+    kbModel: KbModelState;
+    globalModel: GlobalModelState;
+  }) => ({
+    kbModel,
+    globalModel,
+  }),
+)(IndexPage);

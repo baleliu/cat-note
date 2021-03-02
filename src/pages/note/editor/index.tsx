@@ -1,11 +1,11 @@
 import DragLine from '@/components/DragLine';
 import EditorTitle from '@/components/EditorTitle';
-import TuiEditor, { changeMode } from '@/components/TuiEditor';
+import TuiEditor, { changeMode, htmlToMarkdown } from '@/components/TuiEditor';
 import {
   ExclamationCircleOutlined,
   PlusSquareOutlined,
 } from '@ant-design/icons';
-import { Dropdown, Layout, Menu, Modal, Select, Tree } from 'antd';
+import { Dropdown, Layout, Menu, Modal, Select, Tree, Empty } from 'antd';
 import React, { FC, useRef, useState } from 'react';
 import {
   connect,
@@ -25,8 +25,20 @@ interface PageProps extends ConnectProps {
   loading: boolean;
 }
 
+const getKbFlag = (kbModel: any, key?: string) => {
+  if (!key) {
+    return false;
+  }
+  for (let i in kbModel.data) {
+    if (kbModel.data[i].id === key) {
+      return true;
+    }
+  }
+  return false;
+};
+
 const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
-  const editorRef: any = React.createRef();
+  const editorRef: any = useRef();
   const categoryRef: any = useRef();
   const [editKey, setEditKey] = useState<string>();
   const [showSiderWidth, setShowSiderWidth] = useState<{
@@ -42,6 +54,7 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
       });
   };
 
+  let kbFlag = getKbFlag(kbModel, editorModel.currentKb);
   return (
     <Layout className="layout">
       <DragLine
@@ -68,8 +81,9 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                 payload: id,
               });
           }}
-          defaultValue={kbModel.data[0] && kbModel.data[0].id}
+          defaultValue={kbFlag ? editorModel.currentKb : undefined}
           showSearch
+          size="large"
           style={{ width: '100%' }}
           placeholder="Select a person"
           optionFilterProp="children"
@@ -82,24 +96,16 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
             );
           })}
         </Select>
-        <div
-          style={{
-            height: '70px',
-            padding: '0 0',
-            margin: '0 0',
-          }}
-        >
-          <PlusSquareOutlined
-            style={{
-              fontSize: '50px',
-              marginTop: '10px',
-              marginBottom: '10px',
-              width: '100%',
-            }}
-            onClick={() => {
-              addCatalog();
-            }}
-          />
+        <div className="catalog-tool-bar">
+          <div className="catalog-tool-btn">
+            <PlusSquareOutlined
+              className="catalog-tool-btn-icon"
+              color="gray"
+              onClick={() => {
+                addCatalog();
+              }}
+            />
+          </div>
         </div>
         <Tree
           onSelect={(
@@ -119,7 +125,12 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
               <Dropdown
                 overlay={
                   <Menu>
-                    <Menu.Item onClick={() => {}} key="1">
+                    <Menu.Item
+                      onClick={() => {
+                        addCatalog(node.key);
+                      }}
+                      key="1"
+                    >
                       添加子文档
                     </Menu.Item>
                     <Menu.Item
@@ -166,6 +177,7 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                               true,
                             );
                           }
+                          console.log(editorRef.current);
                         }}
                         key="3"
                       >
@@ -176,7 +188,7 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                 }
                 trigger={['contextMenu']}
               >
-                <div style={{ border: '1px solid black' }}>{node.title}</div>
+                <div className="catalog-tree-node-title">{node.title}</div>
               </Dropdown>
             );
           }}
@@ -185,51 +197,63 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
             console.log(info);
           }}
           draggable={true}
-          treeData={editorModel.treeData}
+          treeData={kbFlag ? editorModel.treeData : []}
           showIcon={true}
         />
       </Sider>
       <Layout>
-        <Header className="editor-title">
-          <EditorTitle
-            key={editKey ? editKey : ''}
-            title={editorModel.currentTitle}
-            onChange={(e) => {
-              const { value } = e.target;
-              dispatch &&
-                dispatch({
-                  type: 'editorModel/_updateCatalog',
-                  payload: {
-                    key: editorModel.currentKey,
-                    title: value,
-                  },
-                });
+        {kbFlag ? (
+          <>
+            <Header className="editor-title">
+              <EditorTitle
+                key={editKey ? editKey : ''}
+                title={editorModel.currentTitle}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  dispatch &&
+                    dispatch({
+                      type: 'editorModel/_updateCatalog',
+                      payload: {
+                        key: editorModel.currentKey,
+                        title: value,
+                      },
+                    });
+                }}
+              />
+            </Header>
+            <Content
+              style={{
+                padding: '0 0px',
+                marginLeft: '3px',
+                height: 'calc(100vh - 80px)',
+              }}
+            >
+              <TuiEditor
+                height="calc(100vh - 80px)"
+                value={kbFlag ? editorModel.currentText : ''}
+                instanceRef={editorRef}
+                key={editKey ? editKey : ''}
+                fileKey={editorModel.currentFileKey}
+                editType={editorModel.currentEditType}
+                blur={(text) => {
+                  dispatch &&
+                    dispatch({
+                      type: 'editorModel/save',
+                      payload: text,
+                    });
+                }}
+              />
+            </Content>
+          </>
+        ) : (
+          <Empty
+            style={{
+              height: 'calc(100vh - 20px)',
+              lineHeight: 'calc(100vh - 20px)',
             }}
+            description={'请选择知识库'}
           />
-        </Header>
-        <Content
-          style={{
-            padding: '0 0px',
-            marginLeft: '3px',
-            height: 'calc(100vh - 80px)',
-          }}
-        >
-          <TuiEditor
-            height="calc(100vh - 80px)"
-            value={editorModel.currentText}
-            instanceRef={editorRef}
-            key={editKey ? editKey : ''}
-            fileKey={editorModel.currentFileKey}
-            editType={editorModel.currentEditType}
-            blur={(text) => {
-              dispatch &&
-                dispatch({
-                  type: 'editorModel/save',
-                  payload: text,
-                });
-            }}
-          />
-        </Content>
+        )}
       </Layout>
     </Layout>
   );

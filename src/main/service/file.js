@@ -6,21 +6,14 @@ const log = require('electron-log');
 const finalPath = (arg) => {
   let dir = path.join(app.getPath('userData'), arg.tag ? arg.tag : 'default');
   dir = path.join(dir, arg.fileKey);
-  try {
-    let stat = fs.statSync(dir);
-    if (!stat.isDirectory()) {
-      fs.mkdirSync(dir);
-    }
-  } catch (e) {
-    fs.mkdirSync(dir);
-  }
+  fs.mkdirSync(dir, { recursive: true });
   const suffix = arg.suffix ? arg.suffix : '';
   return path.join(dir, `index${suffix}`);
 };
 
 ipcMain.on('write-file', (event, arg) => {
-  log.info(`write-file`);
   let fp = finalPath(arg);
+  log.info(`write-file ${fp}`);
   fs.writeFile(fp, arg.data, (err) => {
     if (err) throw err;
     let callback = arg.callback;
@@ -40,14 +33,7 @@ ipcMain.on('write-file-sync', (event, arg) => {
 ipcMain.on('read-file-sync', (event, arg) => {
   try {
     const encoding = arg.encoding ? arg.encoding : 'utf8';
-    const suffix = arg.suffix ? arg.suffix : '';
-    const fp = path.join(
-      path.join(
-        path.join(app.getPath('userData'), arg.tag ? arg.tag : 'default'),
-        arg.fileKey,
-      ),
-      'index' + suffix,
-    );
+    const fp = finalPath(arg);
     log.info(`read-file-sync ${fp}`);
     event.returnValue = fs.readFileSync(fp, encoding);
   } catch (e) {

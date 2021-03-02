@@ -1,6 +1,9 @@
 import { Effect, ImmerReducer, Subscription } from 'umi';
 import uuid from 'uuid';
-
+import {
+  ExclamationCircleOutlined,
+  PlusSquareOutlined,
+} from '@ant-design/icons';
 interface CatalogNode {
   title: string;
   key: string;
@@ -56,7 +59,7 @@ const findNode = (
 const storeCatalog = (data: IndexModelState) => {
   window.api.db.set('catalog.' + data.currentKb, data.treeData, 'note');
 };
-const getCatalog = (key: string) => {
+const getCatalog = (key?: string) => {
   return window.api.db.get('catalog.' + key, 'note');
 };
 const writeFile = window.api.file.writeFile;
@@ -111,7 +114,6 @@ const IndexModel: IndexModelType = {
         });
     },
     toggleEditType(state, action) {
-      console.log('切换');
       if (state.currentEditType === 'markdown') {
         state.currentEditType = 'wysiwyg';
       } else {
@@ -184,6 +186,10 @@ const IndexModel: IndexModelType = {
         if (pathname === '/note/editor') {
           dispatch({
             type: 'kbModel/selectAll',
+          });
+          dispatch({
+            type: 'globalModel/updateFooter',
+            payload: '',
           });
         }
       });

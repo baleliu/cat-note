@@ -9,6 +9,7 @@ interface SiderBar {
 
 export interface GlobalModelState {
   name: string;
+  footer?: string;
   bars: SiderBar[];
 }
 export interface GlobalModelType {
@@ -18,6 +19,7 @@ export interface GlobalModelType {
   reducers: {
     load: ImmerReducer<GlobalModelState>;
     settingMenu: ImmerReducer<GlobalModelState>;
+    updateFooter: ImmerReducer<GlobalModelState>;
   };
   subscriptions: { setup: Subscription };
 }
@@ -26,18 +28,19 @@ const GlobalModel: GlobalModelType = {
   namespace: 'globalModel',
   state: {
     name: 'http://localhost:8000/#/home',
+    footer: '啥也没有',
     bars: [
       {
         id: '2',
-        route: '/note/editor',
-        name: '写',
-        icon: 'EditOutlined',
+        route: '/note/kb',
+        name: '库',
+        icon: 'BookOutlined',
       },
       {
         id: '3',
-        route: '/note/kb',
-        name: '知识库',
-        icon: 'BookOutlined',
+        route: '/note/editor',
+        name: '写',
+        icon: 'EditOutlined',
       },
     ],
   },
@@ -45,6 +48,10 @@ const GlobalModel: GlobalModelType = {
   reducers: {
     load(state, action) {
       window.api.forward(action.payload);
+    },
+    updateFooter(state, action) {
+      state.footer = action.payload;
+      console.log(action.payload);
     },
     settingMenu() {
       window.api.settingMenu();
