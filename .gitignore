@@ -2,23 +2,23 @@
 
 # dependencies
 **/node_modules
-/npm-debug.log*
-/yarn-error.log
+**/npm-debug.log*
+**/yarn-error.log
 **/yarn.lock
-/package-lock.json
+**/package-lock.json
 
 # production
-/dist
+**/dist
 
 # misc
 .DS_Store
 
 # umi
-/src/.umi
-/src/.umi-production
-/src/.umi-test
-/.env.local
+**/src/.umi
+**/src/.umi-production
+**/src/.umi-test
+**/.env.local
 
 # electron
-/target
-/backup
+**/target
+**/backup
