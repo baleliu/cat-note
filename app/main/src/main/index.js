@@ -36,18 +36,18 @@ function createMainWindow() {
   });
 
   if (isDevelopment) {
-    // window.loadURL(`http://localhost:8000/#/note/editor`);
+    window.loadURL(`http://localhost:8000/#/note/editor`);
     // window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
-    window.loadURL(
-      format({
-        pathname: path.join(
-          path.join(app.getPath('userData'), 'renderer'),
-          'index.html',
-        ),
-        protocol: 'file',
-        slashes: true,
-      }),
-    );
+    // window.loadURL(
+    //   format({
+    //     pathname: path.join(
+    //       path.join(app.getPath('userData'), 'renderer'),
+    //       'index.html',
+    //     ),
+    //     protocol: 'file',
+    //     slashes: true,
+    //   }),
+    // );
   } else {
     window.loadURL(
       format({

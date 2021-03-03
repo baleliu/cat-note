@@ -1,6 +1,10 @@
 {
   "name": "main",
   "version": "0.0.1",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/baleliu/cat-note.git"
+  },
   "build": {
     "appId": "cn.net.bale",
     "productName": "cat-note",
@@ -93,4 +97,5 @@
     "umi-plugin-chunk-rename": "^1.0.1",
     "yorkie": "^2.0.0"
   }
+  
 }

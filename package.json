@@ -1,5 +1,9 @@
 {
   "name": "root",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/baleliu/cat-note.git"
+  },
   "private": true,
   "devDependencies": {
     "lerna": "^3.22.1"

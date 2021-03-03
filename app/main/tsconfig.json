@@ -11,17 +11,17 @@
     "noImplicitAny": false,
     "strict": true,
     "paths": {
-      "@/*": ["src/*"],
-      "@@/*": ["src/.umi/*"]
+      "@/*": ["boot/src/*"],
+      "@@/*": ["boot/src/.umi/*"]
     },
     "allowSyntheticDefaultImports": true
   },
   "include": [
     "mock/**/*",
-    "src/**/*",
+    "boot/src/**/*",
     "config/**/*",
-    ".umirc.ts",
-    "typings.d.ts"
+    "boot/.umirc.ts",
+    "../typings.d.ts"
   ],
   "exclude": [
     "node_modules",

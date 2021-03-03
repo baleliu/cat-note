@@ -6,6 +6,7 @@ import './style.less';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 const { confirm } = Modal;
+const { Search } = Input;
 
 interface PageProps extends ConnectProps {
   kbModel: KbModelState;
@@ -209,6 +210,22 @@ const IndexPage: FC<PageProps> = ({ kbModel, dispatch }) => {
             </Form.Item>
           </Form>
         </Drawer>
+        <div>
+          <Search
+            placeholder="根据【名称】查询库"
+            style={{
+              width: '30%',
+              float: 'right',
+              marginTop: '5px',
+              marginRight: '150px',
+              marginBottom: '5px',
+            }}
+            onSearch={(e) => {
+              console.log('todo '+ e);
+            }}
+            enterButton
+          />
+        </div>
         <Table
           className="kb-table"
           scroll={{ y: 'calc(100vh - 132px)' }}
