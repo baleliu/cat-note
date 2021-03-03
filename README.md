@@ -1,20 +1,21 @@
-# umi project
-
-## Getting Started
-
-Install dependencies,
-
-```bash
-$ yarn
+# 初始化工程
+```
+yarn
+```
+# 初始化 main 模块
+```
+cd app/maim 
+yarn
 ```
 
-Start the dev server,
+# 通过 lerna 执行 main 模块脚本
 
-```bash
-$ yarn start
+```
+lerna run --scope main 脚本
 ```
 
-# package.json
+# 通过 lerna 执行 main 命令
 
-## 
-
+```
+lerna exec --scope main 命令
+```
