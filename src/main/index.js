@@ -36,12 +36,14 @@ function createMainWindow() {
   });
 
   if (isDevelopment) {
-    window.loadURL(`http://localhost:8000/#/note/editor`);
-    // window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
+    window.loadURL(`http://localhost:8000`);
     // window.loadURL(
     //   format({
     //     pathname: path.join(
-    //       path.join(app.getPath('userData'), 'renderer'),
+    //       path.join(
+    //         '/Users/bale/development/workspace/github-space/cat-note/app/main/dist',
+    //         'renderer',
+    //       ),
     //       'index.html',
     //     ),
     //     protocol: 'file',
@@ -63,39 +65,39 @@ function createMainWindow() {
   });
 
   // window.open 动作 https://www.electronjs.org/docs/api/web-contents#event-new-window
-  window.webContents.on(
-    'new-window',
-    (
-      event,
-      url,
-      frameName,
-      disposition,
-      options,
-      additionalFeatures,
-      referrer,
-      postBody,
-    ) => {
-      event.preventDefault();
-      // const win = new BrowserWindow({
-      //   webContents: options.webContents, // use existing webContents if provided
-      //   show: false
-      // })
-      // win.once('ready-to-show', () => win.show())
-      // if (!options.webContents) {
-      //   const loadOptions = {
-      //     httpReferrer: referrer
-      //   }
-      //   if (postBody != null) {
-      //     const { data, contentType, boundary } = postBody
-      //     loadOptions.postData = postBody.data
-      //     loadOptions.extraHeaders = `content-type: ${contentType}; boundary=${boundary}`
-      //   }
+  // window.webContents.on(
+  //   'new-window',
+  //   (
+  //     event,
+  //     url,
+  //     frameName,
+  //     disposition,
+  //     options,
+  //     additionalFeatures,
+  //     referrer,
+  //     postBody,
+  //   ) => {
+  //     event.preventDefault();
+  //     // const win = new BrowserWindow({
+  //     //   webContents: options.webContents, // use existing webContents if provided
+  //     //   show: false
+  //     // })
+  //     // win.once('ready-to-show', () => win.show())
+  //     // if (!options.webContents) {
+  //     //   const loadOptions = {
+  //     //     httpReferrer: referrer
+  //     //   }
+  //     //   if (postBody != null) {
+  //     //     const { data, contentType, boundary } = postBody
+  //     //     loadOptions.postData = postBody.data
+  //     //     loadOptions.extraHeaders = `content-type: ${contentType}; boundary=${boundary}`
+  //     //   }
 
-      //   win.loadURL(url, loadOptions) // existing webContents will be navigated automatically
-      // }
-      // event.newGuest = win
-    },
-  );
+  //     //   win.loadURL(url, loadOptions) // existing webContents will be navigated automatically
+  //     // }
+  //     // event.newGuest = win
+  //   },
+  // );
 
   window.webContents.on('devtools-opened', () => {
     window.focus();
@@ -105,10 +107,10 @@ function createMainWindow() {
   });
 
   // a标签 动作 https://www.electronjs.org/docs/api/web-contents#event-will-navigate
-  window.webContents.on('will-navigate', (event, url) => {
-    event.preventDefault();
-    console.log(url);
-  });
+  // window.webContents.on('will-navigate', (event, url) => {
+  //   event.preventDefault();
+  //   console.log(url);
+  // });
 
   // 隐藏窗口的菜单栏
   window.setMenuBarVisibility(false);

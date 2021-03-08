@@ -56,34 +56,53 @@ export const changeMode = (instance, mode, isWithoutFocus) => {
 };
 
 // 自定义 html 渲染 https://github.com/nhn/tui.editor/blob/a22c2c379cc6495eaea1c9dded61dc501eca9e26/apps/editor/docs/custom-html-renderer.md
-const customHTMLRenderer: any = {
-  image(node: any, context: any) {
-    const { destination } = node;
-    const { getChildrenText, skipChildren } = context;
-    skipChildren();
-    if (destination.startsWith('http')) {
+const customHTMLRenderer: any = (props) => {
+  return {
+    heading({ level }, { entering }) {
+      console.log('heading');
+      return {
+        type: entering ? 'openTag' : 'closeTag',
+        tagName: `a`,
+        attributes: {
+          hh: 'hh',
+        },
+      };
+    },
+    text(node) {
+      console.log(node);
+      return {
+        type: 'text',
+        content: node.literal,
+      };
+    },
+    image(node: any, context: any) {
+      const { destination } = node;
+      const { getChildrenText, skipChildren } = context;
+      skipChildren();
+      if (destination.startsWith('http')) {
+        return {
+          type: 'openTag',
+          tagName: 'img',
+          selfClose: true,
+          attributes: {
+            src: destination,
+            alt: getChildrenText(node),
+          },
+        };
+      }
+      const src = readFileKeyAsBase64(destination, props.fileKey);
       return {
         type: 'openTag',
         tagName: 'img',
         selfClose: true,
         attributes: {
-          src: destination,
+          src: src,
+          'src-file-key': destination,
           alt: getChildrenText(node),
         },
       };
-    }
-    const src = readFileKeyAsBase64(destination, props.fileKey);
-    return {
-      type: 'openTag',
-      tagName: 'img',
-      selfClose: true,
-      attributes: {
-        src: src,
-        'src-file-key': destination,
-        alt: getChildrenText(node),
-      },
-    };
-  },
+    },
+  };
 };
 
 const hooks = (editorRef, props) => {
@@ -201,7 +220,7 @@ export default (props: {
         hideModeSwitch={true}
         useDefaultHTMLSanitizer={false}
         hooks={hooks(props.instanceRef, props)}
-        customHTMLRenderer={customHTMLRenderer}
+        customHTMLRenderer={customHTMLRenderer(props)}
         useCommandShortcut={true}
         ref={props.instanceRef}
         events={events(props.instanceRef, props)}

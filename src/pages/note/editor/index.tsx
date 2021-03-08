@@ -5,7 +5,16 @@ import {
   ExclamationCircleOutlined,
   PlusSquareOutlined,
 } from '@ant-design/icons';
-import { Dropdown, Layout, Menu, Modal, Select, Tree, Empty } from 'antd';
+import {
+  Dropdown,
+  Layout,
+  Menu,
+  Modal,
+  Select,
+  Tree,
+  Empty,
+  Anchor,
+} from 'antd';
 import React, { FC, useRef, useState } from 'react';
 import {
   connect,
@@ -18,6 +27,7 @@ import './style.less';
 const { Header, Content, Sider } = Layout;
 const { Option } = Select;
 const { confirm } = Modal;
+const { Link } = Anchor;
 
 interface PageProps extends ConnectProps {
   editorModel: IndexModelState;
@@ -228,21 +238,30 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                 height: 'calc(100vh - 80px)',
               }}
             >
-              <TuiEditor
-                height="calc(100vh - 80px)"
-                value={kbFlag ? editorModel.currentText : ''}
-                instanceRef={editorRef}
-                key={editKey ? editKey : ''}
-                fileKey={editorModel.currentFileKey}
-                editType={editorModel.currentEditType}
-                blur={(text) => {
-                  dispatch &&
-                    dispatch({
-                      type: 'editorModel/save',
-                      payload: text,
-                    });
-                }}
-              />
+              <Layout>
+                <Content>
+                  <TuiEditor
+                    height="calc(100vh - 80px)"
+                    value={kbFlag ? editorModel.currentText : ''}
+                    instanceRef={editorRef}
+                    key={editKey ? editKey : ''}
+                    fileKey={editorModel.currentFileKey}
+                    editType={editorModel.currentEditType}
+                    blur={(text) => {
+                      dispatch &&
+                        dispatch({
+                          type: 'editorModel/save',
+                          payload: text,
+                        });
+                    }}
+                  />
+                </Content>
+                <Sider
+                  style={{
+                    backgroundColor: '#fff',
+                  }}
+                ></Sider>
+              </Layout>
             </Content>
           </>
         ) : (

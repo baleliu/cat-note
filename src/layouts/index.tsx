@@ -62,17 +62,17 @@ const GlobalLayout = ({
           onClick={() => {
             dispatch({
               type: 'globalModel/load',
-              payload: 'http://localhost:8000/#/editor',
+              payload: 'http://localhost:8000/editor',
             });
           }}
           type="link"
         >
-          http://localhost:8000/#/editor
+          http://localhost:8000/editor
         </Button>
         <hr />
         <Input
           ref={inputRef}
-          defaultValue="http://localhost:8000/#/"
+          defaultValue="http://localhost:8000/"
           onPressEnter={() => {
             const { value } = inputRef.current.state;
             dispatch({

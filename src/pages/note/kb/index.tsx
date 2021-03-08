@@ -221,7 +221,7 @@ const IndexPage: FC<PageProps> = ({ kbModel, dispatch }) => {
               marginBottom: '5px',
             }}
             onSearch={(e) => {
-              console.log('todo '+ e);
+              console.log('todo ' + e);
             }}
             enterButton
           />
