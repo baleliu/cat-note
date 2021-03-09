@@ -24,6 +24,7 @@ import {
   Loading,
 } from 'umi';
 import './style.less';
+
 const { Header, Content, Sider } = Layout;
 const { Option } = Select;
 const { confirm } = Modal;
@@ -260,7 +261,30 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                   style={{
                     backgroundColor: '#fff',
                   }}
-                ></Sider>
+                >
+                  <Anchor>
+                    {editorModel.currentText
+                      .split('\n')
+                      .filter((o: string) => {
+                        return o.startsWith('#');
+                      })
+                      .map((o: string) => {
+                        let temp = o;
+                        let level = '';
+                        while (temp.startsWith('#')) {
+                          temp = temp.substring(1);
+                          level += ' ';
+                        }
+                        temp = temp.trim();
+                        console.log(editorRef.current.getInstance());
+                        return (
+                          <>
+                            <Link href={`#${temp}`} title={`${level}${temp}`} />
+                          </>
+                        );
+                      })}
+                  </Anchor>
+                </Sider>
               </Layout>
             </Content>
           </>

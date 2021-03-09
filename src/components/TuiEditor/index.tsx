@@ -58,18 +58,17 @@ export const changeMode = (instance, mode, isWithoutFocus) => {
 // 自定义 html 渲染 https://github.com/nhn/tui.editor/blob/a22c2c379cc6495eaea1c9dded61dc501eca9e26/apps/editor/docs/custom-html-renderer.md
 const customHTMLRenderer: any = (props) => {
   return {
-    heading({ level }, { entering }) {
-      console.log('heading');
+    heading(node, b) {
+      console.log('asda');
       return {
-        type: entering ? 'openTag' : 'closeTag',
-        tagName: `a`,
+        type: b.entering ? 'openTag' : 'closeTag',
+        tagName: `h${node.level}`,
         attributes: {
-          hh: 'hh',
+          id: b.getChildrenText(node),
         },
       };
     },
     text(node) {
-      console.log(node);
       return {
         type: 'text',
         content: node.literal,
@@ -216,6 +215,30 @@ export default (props: {
         height={props.height}
         initialEditType={props.editType}
         usageStatistics={false}
+        // 自定义工具栏 https://nhn.github.io/tui.editor/latest/tutorial-example19-customizing-toolbar-buttons
+        toolbarItems={[
+          'heading',
+          'bold',
+          'italic',
+          'strike',
+          'divider',
+          'hr',
+          'quote',
+          'divider',
+          'ul',
+          'ol',
+          'task',
+          'indent',
+          'outdent',
+          'divider',
+          'table',
+          'image',
+          'link',
+          'divider',
+          'code',
+          'codeblock',
+          'divider',
+        ]}
         // 编辑器底部切换模式
         hideModeSwitch={true}
         useDefaultHTMLSanitizer={false}

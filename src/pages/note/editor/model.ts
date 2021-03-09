@@ -1,9 +1,5 @@
 import { Effect, ImmerReducer, Subscription } from 'umi';
 import uuid from 'uuid';
-import {
-  ExclamationCircleOutlined,
-  PlusSquareOutlined,
-} from '@ant-design/icons';
 interface CatalogNode {
   title: string;
   key: string;

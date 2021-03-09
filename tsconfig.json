@@ -12,7 +12,7 @@
     "strict": true,
     "paths": {
       "@/*": ["src/*"],
-      "@@/*": [".umi/*"]
+      "@@/*": ["src/.umi/*"]
     },
     "allowSyntheticDefaultImports": true
   },
