@@ -248,10 +248,17 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                     key={editKey ? editKey : ''}
                     fileKey={editorModel.currentFileKey}
                     editType={editorModel.currentEditType}
+                    change={(text) => {
+                      dispatch &&
+                        dispatch({
+                          type: 'editorModel/saveText',
+                          payload: text,
+                        });
+                    }}
                     blur={(text) => {
                       dispatch &&
                         dispatch({
-                          type: 'editorModel/save',
+                          type: 'editorModel/_saveText',
                           payload: text,
                         });
                     }}
@@ -276,11 +283,8 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                           level += ' ';
                         }
                         temp = temp.trim();
-                        console.log(editorRef.current.getInstance());
                         return (
-                          <>
-                            <Link href={`#${temp}`} title={`${level}${temp}`} />
-                          </>
+                          <Link href={`#${temp}`} title={`${level}${temp}`} />
                         );
                       })}
                   </Anchor>

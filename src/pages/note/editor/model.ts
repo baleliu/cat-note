@@ -22,11 +22,12 @@ export interface IndexModelType {
   state: IndexModelState;
   effects: {
     _createCatalog: Effect;
+    _saveText: Effect;
     _updateCatalog: Effect;
     _deleteCatalog: Effect;
   };
   reducers: {
-    save: ImmerReducer<IndexModelState>;
+    saveText: ImmerReducer<IndexModelState>;
     loadText: ImmerReducer<IndexModelState>;
     createCatalog: ImmerReducer<IndexModelState>;
     deleteCatalog: ImmerReducer<IndexModelState>;
@@ -69,6 +70,21 @@ const IndexModel: IndexModelType = {
     currentEditType: 'wysiwyg',
   },
   effects: {
+    *_saveText({ payload }, { call, put, select }) {
+      yield put({
+        type: 'saveText',
+        payload: payload,
+      });
+      const data = yield select((state: any) => {
+        return state.editorModel;
+      });
+      console.log(data);
+      data.currentFileKey &&
+        writeFile({
+          fileKey: data.currentFileKey,
+          data: data.currentText,
+        });
+    },
     *_createCatalog({ payload }, { call, put, select }) {
       yield put({
         type: 'createCatalog',
@@ -101,13 +117,8 @@ const IndexModel: IndexModelType = {
     },
   },
   reducers: {
-    save(state, action) {
+    saveText(state, action) {
       state.currentText = action.payload;
-      state.currentFileKey &&
-        writeFile({
-          fileKey: state.currentFileKey,
-          data: state.currentText,
-        });
     },
     toggleEditType(state, action) {
       if (state.currentEditType === 'markdown') {

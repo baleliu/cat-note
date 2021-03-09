@@ -55,11 +55,14 @@ export const changeMode = (instance, mode, isWithoutFocus) => {
   }
 };
 
-// 自定义 html 渲染 https://github.com/nhn/tui.editor/blob/a22c2c379cc6495eaea1c9dded61dc501eca9e26/apps/editor/docs/custom-html-renderer.md
+/**
+ * 自定义 html 渲染 https://github.com/nhn/tui.editor/blob/a22c2c379cc6495eaea1c9dded61dc501eca9e26/apps/editor/docs/custom-html-renderer.md
+ * @param props editor props
+ * @returns customHTMLRenderer
+ */
 const customHTMLRenderer: any = (props) => {
   return {
     heading(node, b) {
-      console.log('asda');
       return {
         type: b.entering ? 'openTag' : 'closeTag',
         tagName: `h${node.level}`,
@@ -165,32 +168,76 @@ const readFileKeyAsBase64 = (suffix, fileKey) => {
   return `data:image/png;${encoding},${src}`;
 };
 
-const events = (editorRef, props) => {
-  return {
-    blur: (e) => {
-      console.log(e);
-      console.log(editorRef);
-      if (editorRef.current) {
-        const instance = editorRef.current.getInstance();
-        if (instance) {
-          let mdText: string = '';
-          if (instance.isMarkdownMode()) {
-            mdText = instance.getMarkdown();
-          } else {
-            const wwe = instance.wwEditor;
-            let html = wwe.getValue();
-            html = htmlToMarkdown(html);
-            mdText = instance.convertor.toMarkdown(
-              html,
-              instance.toMarkOptions,
-            );
-          }
-          props.blur && props.blur(mdText);
-        }
-      }
-    },
+const callInstance = (editorRef: any, call: (instance: any) => void) => {
+  if (editorRef.current) {
+    const instance = editorRef.current.getInstance();
+    if (instance) {
+      call(instance);
+    }
+  }
+};
+
+const getInstanceMdText = (instance: any): string => {
+  let mdText: string = '';
+  if (instance.isMarkdownMode()) {
+    mdText = instance.getMarkdown();
+  } else {
+    const wwe = instance.wwEditor;
+    let html = wwe.getValue();
+    html = htmlToMarkdown(html);
+    mdText = instance.convertor.toMarkdown(html, instance.toMarkOptions);
+  }
+  return mdText;
+};
+
+const defaultEvent = (editorRef, callback) => {
+  return (e) => {
+    callInstance(editorRef, (instance) => {
+      callback && callback(getInstanceMdText(instance));
+    });
   };
 };
+
+const events = (editorRef, props) => {
+  return {
+    change: defaultEvent(editorRef, props.change),
+    blur: defaultEvent(editorRef, props.blur),
+  };
+};
+
+type EventType = (md: string) => void;
+type EditType = 'markdown' | 'wysiwyg';
+
+/**
+ * 自定义工具栏 https://nhn.github.io/tui.editor/latest/tutorial-example19-customizing-toolbar-buttons
+ * @returns toolbarItems
+ */
+const toolbarItems = () => {
+  return [
+    'heading',
+    'bold',
+    'italic',
+    'strike',
+    'divider',
+    'hr',
+    'quote',
+    'divider',
+    'ul',
+    'ol',
+    'task',
+    'indent',
+    'outdent',
+    'divider',
+    'table',
+    'image',
+    'link',
+    'divider',
+    'code',
+    'codeblock',
+    'divider',
+  ];
+};
+
 export default (props: {
   value: string;
   key: string;
@@ -198,14 +245,15 @@ export default (props: {
   instanceRef?: any;
   height?: string;
   fileKey?: string;
-  editType?: 'markdown' | 'wysiwyg';
+  editType?: EditType;
   addImageBlobHook?: (
     file: Blob | File,
   ) => {
     url: string;
     alt: string;
   };
-  blur?: (md: string) => void;
+  blur?: EventType;
+  change?: EventType;
 }) => {
   return (
     <div style={props.style}>
@@ -215,30 +263,7 @@ export default (props: {
         height={props.height}
         initialEditType={props.editType}
         usageStatistics={false}
-        // 自定义工具栏 https://nhn.github.io/tui.editor/latest/tutorial-example19-customizing-toolbar-buttons
-        toolbarItems={[
-          'heading',
-          'bold',
-          'italic',
-          'strike',
-          'divider',
-          'hr',
-          'quote',
-          'divider',
-          'ul',
-          'ol',
-          'task',
-          'indent',
-          'outdent',
-          'divider',
-          'table',
-          'image',
-          'link',
-          'divider',
-          'code',
-          'codeblock',
-          'divider',
-        ]}
+        toolbarItems={toolbarItems()}
         // 编辑器底部切换模式
         hideModeSwitch={true}
         useDefaultHTMLSanitizer={false}
