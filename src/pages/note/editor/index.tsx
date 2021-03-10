@@ -239,57 +239,28 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                 height: 'calc(100vh - 80px)',
               }}
             >
-              <Layout>
-                <Content>
-                  <TuiEditor
-                    height="calc(100vh - 80px)"
-                    value={kbFlag ? editorModel.currentText : ''}
-                    instanceRef={editorRef}
-                    key={editKey ? editKey : ''}
-                    fileKey={editorModel.currentFileKey}
-                    editType={editorModel.currentEditType}
-                    change={(text) => {
-                      dispatch &&
-                        dispatch({
-                          type: 'editorModel/saveText',
-                          payload: text,
-                        });
-                    }}
-                    blur={(text) => {
-                      dispatch &&
-                        dispatch({
-                          type: 'editorModel/_saveText',
-                          payload: text,
-                        });
-                    }}
-                  />
-                </Content>
-                <Sider
-                  style={{
-                    backgroundColor: '#fff',
-                  }}
-                >
-                  <Anchor>
-                    {editorModel.currentText
-                      .split('\n')
-                      .filter((o: string) => {
-                        return o.startsWith('#');
-                      })
-                      .map((o: string) => {
-                        let temp = o;
-                        let level = '';
-                        while (temp.startsWith('#')) {
-                          temp = temp.substring(1);
-                          level += ' ';
-                        }
-                        temp = temp.trim();
-                        return (
-                          <Link href={`#${temp}`} title={`${level}${temp}`} />
-                        );
-                      })}
-                  </Anchor>
-                </Sider>
-              </Layout>
+              <TuiEditor
+                height="calc(100vh - 80px)"
+                value={kbFlag ? editorModel.currentText : ''}
+                instanceRef={editorRef}
+                key={editKey ? editKey : ''}
+                fileKey={editorModel.currentFileKey}
+                editType={editorModel.currentEditType}
+                change={(text) => {
+                  dispatch &&
+                    dispatch({
+                      type: 'editorModel/saveText',
+                      payload: text,
+                    });
+                }}
+                blur={(text) => {
+                  dispatch &&
+                    dispatch({
+                      type: 'editorModel/_saveText',
+                      payload: text,
+                    });
+                }}
+              />
             </Content>
           </>
         ) : (

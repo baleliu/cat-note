@@ -4,6 +4,19 @@ import 'codemirror/lib/codemirror.css';
 import React, { useRef } from 'react';
 import uuid from 'uuid';
 import './style.less';
+import {
+  Dropdown,
+  Layout,
+  Menu,
+  Modal,
+  Select,
+  Tree,
+  Empty,
+  Anchor,
+} from 'antd';
+
+const { Header, Content, Sider } = Layout;
+const { Link } = Anchor;
 
 export const htmlToMarkdown = (html: string) => {
   let imgs = html.match(
@@ -256,23 +269,50 @@ export default (props: {
   change?: EventType;
 }) => {
   return (
-    <div style={props.style}>
-      <Editor
-        previewStyle="tab"
-        initialValue={props.value}
-        height={props.height}
-        initialEditType={props.editType}
-        usageStatistics={false}
-        toolbarItems={toolbarItems()}
-        // 编辑器底部切换模式
-        hideModeSwitch={true}
-        useDefaultHTMLSanitizer={false}
-        hooks={hooks(props.instanceRef, props)}
-        customHTMLRenderer={customHTMLRenderer(props)}
-        useCommandShortcut={true}
-        ref={props.instanceRef}
-        events={events(props.instanceRef, props)}
-      />
-    </div>
+    <Layout>
+      <Content>
+        <div style={props.style}>
+          <Editor
+            previewStyle="tab"
+            initialValue={props.value}
+            height={props.height}
+            initialEditType={props.editType}
+            usageStatistics={false}
+            toolbarItems={toolbarItems()}
+            // 编辑器底部切换模式
+            hideModeSwitch={true}
+            useDefaultHTMLSanitizer={false}
+            hooks={hooks(props.instanceRef, props)}
+            customHTMLRenderer={customHTMLRenderer(props)}
+            useCommandShortcut={true}
+            ref={props.instanceRef}
+            events={events(props.instanceRef, props)}
+          />
+        </div>
+      </Content>
+      <Sider
+        style={{
+          backgroundColor: '#fff',
+        }}
+      >
+        <Anchor>
+          {props.value
+            .split('\n')
+            .filter((o: string) => {
+              return o.startsWith('#');
+            })
+            .map((o: string) => {
+              let temp = o;
+              let level = '';
+              while (temp.startsWith('#')) {
+                temp = temp.substring(1);
+                level += ' ';
+              }
+              temp = temp.trim();
+              return <Link href={`#${temp}`} title={`${level}${temp}`} />;
+            })}
+        </Anchor>
+      </Sider>
+    </Layout>
   );
 };
