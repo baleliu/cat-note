@@ -150,15 +150,18 @@ const IndexModel: IndexModelType = {
     },
     updateCatalog(state, action) {
       let { key, title, editType } = action.payload;
+      console.log(`updateCatalog ${editType}`);
       findNode(state.treeData, key, (node) => {
         if (title) {
           node.title = title;
         }
         if (editType) {
           node.editType = editType;
-          state.currentEditType = editType;
         }
       });
+      if (editType) {
+        state.currentEditType = editType;
+      }
     },
     createCatalog(state, action) {
       const newKey = uuid.v4();

@@ -50,7 +50,6 @@ const getKbFlag = (kbModel: any, key?: string) => {
 
 const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
   const editorRef: any = useRef();
-  const categoryRef: any = useRef();
   const [editKey, setEditKey] = useState<string>();
   const [showSiderWidth, setShowSiderWidth] = useState<{
     siderWidth: string;
@@ -64,6 +63,8 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
         payload: key,
       });
   };
+
+  console.log(`zuiwaiceng ${editorModel.currentEditType}`);
 
   let kbFlag = getKbFlag(kbModel, editorModel.currentKb);
   return (
@@ -168,27 +169,35 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                     {node.key === editorModel.currentKey && (
                       <Menu.Item
                         onClick={() => {
-                          let currentNode: any = node;
-                          let mode = 'markdown';
-                          if (currentNode.editType === 'markdown') {
-                            mode = 'wysiwyg';
-                          }
-                          dispatch &&
-                            dispatch({
-                              type: 'editorModel/_updateCatalog',
-                              payload: {
-                                key: currentNode.key,
-                                editType: mode,
-                              },
-                            });
-                          if (editorModel.currentKey === node.key) {
-                            changeMode(
-                              editorRef.current.getInstance(),
-                              mode,
-                              true,
-                            );
-                          }
-                          console.log(editorRef.current);
+                          confirm({
+                            okText: '切换',
+                            cancelText: '取消',
+                            title: `是否切换模式【${node.title}】`,
+                            icon: <ExclamationCircleOutlined />,
+                            // content: 'Some descriptions',
+                            onOk() {
+                              let currentNode: any = node;
+                              let mode = 'markdown';
+                              if (currentNode.editType === 'markdown') {
+                                mode = 'wysiwyg';
+                              }
+                              dispatch &&
+                                dispatch({
+                                  type: 'editorModel/_updateCatalog',
+                                  payload: {
+                                    key: currentNode.key,
+                                    editType: mode,
+                                  },
+                                });
+                              if (editorModel.currentKey === node.key) {
+                                changeMode(
+                                  editorRef.current.getInstance(),
+                                  mode,
+                                  true,
+                                );
+                              }
+                            },
+                          });
                         }}
                         key="3"
                       >
@@ -240,6 +249,7 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
               }}
             >
               <TuiEditor
+                overview={editorModel.currentEditType == 'wysiwyg'}
                 height="calc(100vh - 80px)"
                 value={kbFlag ? editorModel.currentText : ''}
                 instanceRef={editorRef}

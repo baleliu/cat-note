@@ -1,22 +1,12 @@
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
+import { Layout } from 'antd';
 import 'codemirror/lib/codemirror.css';
-import React, { useRef } from 'react';
+import React from 'react';
 import uuid from 'uuid';
 import './style.less';
-import {
-  Dropdown,
-  Layout,
-  Menu,
-  Modal,
-  Select,
-  Tree,
-  Empty,
-  Anchor,
-} from 'antd';
 
 const { Header, Content, Sider } = Layout;
-const { Link } = Anchor;
 
 export const htmlToMarkdown = (html: string) => {
   let imgs = html.match(
@@ -33,6 +23,10 @@ export const htmlToMarkdown = (html: string) => {
   return html;
 };
 
+const toHtml = (instance: any, value: string) => {
+  return instance.convertor.toHTML(value);
+};
+
 export const changeMode = (instance, mode, isWithoutFocus) => {
   if (instance.currentMode === mode) {
     return;
@@ -45,7 +39,7 @@ export const changeMode = (instance, mode, isWithoutFocus) => {
   if (instance.isWysiwygMode()) {
     instance.layout.switchToWYSIWYG();
     instance.wwEditor.setValue(
-      instance.convertor.toHTML(instance.mdEditor.getValue()),
+      toHtml(instance, instance.mdEditor.getValue()),
       !isWithoutFocus,
     );
     instance.eventManager.emit('changeModeToWysiwyg');
@@ -181,12 +175,18 @@ const readFileKeyAsBase64 = (suffix, fileKey) => {
   return `data:image/png;${encoding},${src}`;
 };
 
-const callInstance = (editorRef: any, call: (instance: any) => void) => {
-  if (editorRef.current) {
-    const instance = editorRef.current.getInstance();
-    if (instance) {
-      call(instance);
+const getInstance = (editorRef: any) => {
+  if (editorRef) {
+    if (editorRef.current) {
+      return editorRef.current.getInstance();
     }
+  }
+};
+
+const callInstance = (editorRef: any, call: (instance: any) => void) => {
+  const instance = getInstance(editorRef);
+  if (instance) {
+    call(instance);
   }
 };
 
@@ -203,7 +203,7 @@ const getInstanceMdText = (instance: any): string => {
   return mdText;
 };
 
-const defaultEvent = (editorRef, callback) => {
+const defaultEvent = (editorRef: any, callback) => {
   return (e) => {
     callInstance(editorRef, (instance) => {
       callback && callback(getInstanceMdText(instance));
@@ -211,7 +211,7 @@ const defaultEvent = (editorRef, callback) => {
   };
 };
 
-const events = (editorRef, props) => {
+const events = (editorRef: any, props) => {
   return {
     change: defaultEvent(editorRef, props.change),
     blur: defaultEvent(editorRef, props.blur),
@@ -259,6 +259,7 @@ export default (props: {
   height?: string;
   fileKey?: string;
   editType?: EditType;
+  overview: boolean;
   addImageBlobHook?: (
     file: Blob | File,
   ) => {
@@ -269,9 +270,9 @@ export default (props: {
   change?: EventType;
 }) => {
   return (
-    <Layout>
-      <Content>
-        <div style={props.style}>
+    <div style={props.style}>
+      <Layout>
+        <Content>
           <Editor
             previewStyle="tab"
             initialValue={props.value}
@@ -283,36 +284,47 @@ export default (props: {
             hideModeSwitch={true}
             useDefaultHTMLSanitizer={false}
             hooks={hooks(props.instanceRef, props)}
-            customHTMLRenderer={customHTMLRenderer(props)}
+            customHTMLRenderer={{
+              ...customHTMLRenderer(props),
+            }}
             useCommandShortcut={true}
             ref={props.instanceRef}
             events={events(props.instanceRef, props)}
           />
-        </div>
-      </Content>
-      <Sider
-        style={{
-          backgroundColor: '#fff',
-        }}
-      >
-        <Anchor>
-          {props.value
-            .split('\n')
-            .filter((o: string) => {
-              return o.startsWith('#');
-            })
-            .map((o: string) => {
-              let temp = o;
-              let level = '';
-              while (temp.startsWith('#')) {
-                temp = temp.substring(1);
-                level += ' ';
-              }
-              temp = temp.trim();
-              return <Link href={`#${temp}`} title={`${level}${temp}`} />;
-            })}
-        </Anchor>
-      </Sider>
-    </Layout>
+        </Content>
+        {props.overview && (
+          <Sider
+            style={{
+              backgroundColor: '#fff',
+              height: props.height,
+              overflowY: 'scroll',
+            }}
+          >
+            {props.value
+              .split('\n')
+              .filter((o: string) => {
+                return o.startsWith('#');
+              })
+              .map((o: string) => {
+                let temp = o;
+                let level = '';
+                while (temp.startsWith('#')) {
+                  temp = temp.substring(1);
+                  level += ' ';
+                }
+                temp = temp.trim();
+                return (
+                  <a
+                    href={`#${temp}`}
+                    dangerouslySetInnerHTML={{
+                      __html: toHtml(getInstance(props.instanceRef), temp),
+                    }}
+                  />
+                );
+              })}
+          </Sider>
+        )}
+      </Layout>
+    </div>
   );
 };
