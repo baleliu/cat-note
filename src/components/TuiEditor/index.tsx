@@ -24,7 +24,9 @@ export const htmlToMarkdown = (html: string) => {
 };
 
 const toHtml = (instance: any, value: string) => {
-  return instance.convertor.toHTML(value);
+  if (instance && instance.convertor) {
+    return instance.convertor.toHTML(value);
+  }
 };
 
 export const changeMode = (instance, mode, isWithoutFocus) => {
@@ -70,11 +72,15 @@ export const changeMode = (instance, mode, isWithoutFocus) => {
 const customHTMLRenderer: any = (props) => {
   return {
     heading(node, b) {
+      let id: string = b.getChildrenText(node);
+      id = '_' + id.trim();
+      id = id.replace(' ', '_');
+      id = id.replace('.', '_');
       return {
         type: b.entering ? 'openTag' : 'closeTag',
         tagName: `h${node.level}`,
         attributes: {
-          id: b.getChildrenText(node),
+          id: id,
         },
       };
     },
@@ -294,34 +300,54 @@ export default (props: {
         </Content>
         {props.overview && (
           <Sider
+            width="260px"
+            className="editor-right-sider"
             style={{
               backgroundColor: '#fff',
               height: props.height,
               overflowY: 'scroll',
             }}
           >
-            {props.value
-              .split('\n')
-              .filter((o: string) => {
-                return o.startsWith('#');
-              })
-              .map((o: string) => {
-                let temp = o;
-                let level = '';
-                while (temp.startsWith('#')) {
-                  temp = temp.substring(1);
-                  level += ' ';
-                }
-                temp = temp.trim();
-                return (
-                  <a
-                    href={`#${temp}`}
-                    dangerouslySetInnerHTML={{
-                      __html: toHtml(getInstance(props.instanceRef), temp),
-                    }}
-                  />
-                );
-              })}
+            {
+              <div className="editor-right-sider-inner1">
+                {props.value
+                  .split('\n')
+                  .filter((o: string) => {
+                    return o.startsWith('#');
+                  })
+                  .map((o: string) => {
+                    let temp = o;
+                    let level = -1;
+                    while (temp.startsWith('#')) {
+                      temp = temp.substring(1);
+                      level++;
+                    }
+                    temp = temp.trim();
+                    let href = '_' + temp.replace(' ', '_');
+                    href = href.replace('.', '_');
+                    href = href.replace('\\', '');
+                    return (
+                      <div
+                        className="editor-right-sider-inner2"
+                        style={{
+                          marginLeft: `${level * 10}px`,
+                          fontSize: `${16 - level}px`,
+                        }}
+                      >
+                        <a
+                          href={`#${href}`}
+                          dangerouslySetInnerHTML={{
+                            __html: toHtml(
+                              getInstance(props.instanceRef),
+                              temp,
+                            ),
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+              </div>
+            }
           </Sider>
         )}
       </Layout>
