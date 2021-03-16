@@ -24,5 +24,6 @@ export default defineConfig({
   theme: {
     '@primary-color': '#1f7688d7',
     '@primary-bk-color': '#333333',
+    '@primary-line-color': '#e5e5e5',
   },
 });

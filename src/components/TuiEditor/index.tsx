@@ -315,7 +315,7 @@ export default (props: {
                   .filter((o: string) => {
                     return o.startsWith('#');
                   })
-                  .map((o: string) => {
+                  .map((o: string, index: number) => {
                     let temp = o;
                     let level = -1;
                     while (temp.startsWith('#')) {
@@ -329,6 +329,7 @@ export default (props: {
                     return (
                       <div
                         className="editor-right-sider-inner2"
+                        key={index}
                         style={{
                           marginLeft: `${level * 10}px`,
                           fontSize: `${16 - level}px`,
