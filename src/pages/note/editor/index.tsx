@@ -1,24 +1,9 @@
 import DragLine from '@/components/DragLine';
+import EditorCatalog from '@/components/EditorCatalog';
 import EditorTitle from '@/components/EditorTitle';
-import TuiEditor, { changeMode } from '@/components/TuiEditor';
-import {
-  BookOutlined,
-  ExclamationCircleOutlined,
-  PlusSquareOutlined,
-  DownOutlined,
-} from '@ant-design/icons';
-import {
-  Anchor,
-  Dropdown,
-  Empty,
-  Layout,
-  Menu,
-  Modal,
-  Select,
-  Tooltip,
-  Tree,
-} from 'antd';
-import React, { FC, useRef, useState } from 'react';
+import TextEditor, { changeMode } from '@/components/TextEditor';
+import { Empty, Layout } from 'antd';
+import { FC, useRef, useState } from 'react';
 import {
   connect,
   ConnectProps,
@@ -29,27 +14,12 @@ import {
 import './style.less';
 
 const { Header, Content, Sider } = Layout;
-const { Option } = Select;
-const { confirm } = Modal;
-const { Link } = Anchor;
 
 interface PageProps extends ConnectProps {
   editorModel: IndexModelState;
   kbModel: KbModelState;
   loading: boolean;
 }
-
-const getKbFlag = (kbModel: any, key?: string) => {
-  if (!key) {
-    return false;
-  }
-  for (let i in kbModel.data) {
-    if (kbModel.data[i].id === key) {
-      return true;
-    }
-  }
-  return false;
-};
 
 const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
   const editorRef: any = useRef();
@@ -59,6 +29,19 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
   }>({
     siderWidth: 300,
   });
+
+  const getKbFlag = (key?: string) => {
+    if (!key) {
+      return false;
+    }
+    for (let i in kbModel.data) {
+      if (kbModel.data[i].id === key) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   const addCatalog = (key?: any) => {
     dispatch &&
       dispatch({
@@ -66,7 +49,78 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
         payload: key,
       });
   };
-  let kbFlag = getKbFlag(kbModel, editorModel.currentKb);
+  const deleteCatalog = (key?: any) => {
+    dispatch &&
+      dispatch({
+        type: 'editorModel/_deleteCatalog',
+        payload: key,
+      });
+  };
+  const onSelect = (node: any) => {
+    const { fileKey, key, title } = node;
+    dispatch &&
+      dispatch({
+        type: 'editorModel/loadText',
+        payload: node,
+      });
+    setEditKey(key);
+  };
+
+  const changeEditorMode = (node: any) => {
+    let currentNode: any = node;
+    let mode = 'markdown';
+    if (currentNode.editType === 'markdown') {
+      mode = 'wysiwyg';
+    }
+    dispatch &&
+      dispatch({
+        type: 'editorModel/_updateCatalog',
+        payload: {
+          key: currentNode.key,
+          editType: mode,
+        },
+      });
+    if (editorModel.currentKey === node.key) {
+      changeMode(editorRef.current.getInstance(), mode, true);
+    }
+  };
+
+  const onSelectKb = (id: string) => {
+    dispatch &&
+      dispatch({
+        type: 'editorModel/loadCatalog',
+        payload: id,
+      });
+  };
+
+  const onChange = (text: string) => {
+    dispatch &&
+      dispatch({
+        type: 'editorModel/saveText',
+        payload: text,
+      });
+  };
+
+  const onBlur = (text: string) => {
+    dispatch &&
+      dispatch({
+        type: 'editorModel/_saveText',
+        payload: text,
+      });
+  };
+
+  const onChangeTitle = (e) => {
+    const { value } = e.target;
+    dispatch &&
+      dispatch({
+        type: 'editorModel/_updateCatalog',
+        payload: {
+          key: editorModel.currentKey,
+          title: value,
+        },
+      });
+  };
+  const kbFlag = getKbFlag(editorModel.currentKb);
   return (
     <Layout className="layout">
       <DragLine
@@ -78,185 +132,25 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
         }}
         height="calc(100vh - 20px)"
         boundWidth="150px"
-      ></DragLine>
+      />
       <Sider
         className="editor-sider-left"
         width={showSiderWidth.siderWidth + 'px'}
       >
-        <Select
-          className="editor-select-kb"
-          onSelect={(id) => {
-            dispatch &&
-              dispatch({
-                type: 'editorModel/loadCatalog',
-                payload: id,
-              });
-          }}
-          defaultValue={kbFlag ? editorModel.currentKb : undefined}
-          showSearch
-          bordered={false}
-          style={{
-            width: showSiderWidth.siderWidth + 'px',
-            position: 'fixed',
-          }}
-          placeholder=""
-          optionFilterProp="children"
-        >
-          {kbModel.data.map((o) => {
-            return (
-              <Option key={o.id} value={o.id}>
-                {o.name}
-              </Option>
-            );
-          })}
-        </Select>
-        <div
-          className="catalog-tool-bar"
-          style={{
-            width: showSiderWidth.siderWidth + 'px',
-          }}
-        >
-          <span className="catalog-tool-btn">
-            <Tooltip placement="bottomLeft" title={'创建新文档'}>
-              <PlusSquareOutlined
-                className="catalog-tool-btn-icon"
-                color="gray"
-                onClick={() => {
-                  addCatalog();
-                }}
-              />
-            </Tooltip>
-          </span>
-          <span className="catalog-tool-btn">
-            <Tooltip placement="bottomLeft" title={'创建知识库'}>
-              <BookOutlined
-                className="catalog-tool-btn-icon"
-                color="gray"
-                onClick={() => {
-                  alert('todo');
-                }}
-              />
-            </Tooltip>
-          </span>
-        </div>
-        <div
-          className="catalog-tree-container"
-          style={{
-            height: 'calc(100vh - 20px)',
-          }}
-        >
-          <Tree
-            showLine={false}
-            // switcherIcon={<DownOutlined/>}
-            // height = {100}
-            onSelect={(
-              selectedKeys,
-              { selected: bool, selectedNodes, node, event },
-            ) => {
-              const { fileKey, key, title } = node as any;
-              dispatch &&
-                dispatch({
-                  type: 'editorModel/loadText',
-                  payload: node,
-                });
-              setEditKey(key);
-            }}
-            titleRender={(node) => {
-              return (
-                <Dropdown
-                  overlay={
-                    <Menu>
-                      <Menu.Item
-                        onClick={() => {
-                          addCatalog(node.key);
-                        }}
-                        key="1"
-                      >
-                        添加子文档
-                      </Menu.Item>
-                      <Menu.Item
-                        onClick={() => {
-                          confirm({
-                            okText: '删除',
-                            cancelText: '取消',
-                            title: `是否删除文档【${node.title}】`,
-                            icon: <ExclamationCircleOutlined />,
-                            // content: 'Some descriptions',
-                            onOk() {
-                              dispatch &&
-                                dispatch({
-                                  type: 'editorModel/_deleteCatalog',
-                                  payload: node.key,
-                                });
-                            },
-                          });
-                        }}
-                        key="2"
-                      >
-                        删除
-                      </Menu.Item>
-                      {node.key === editorModel.currentKey && (
-                        <Menu.Item
-                          onClick={() => {
-                            confirm({
-                              okText: '切换',
-                              cancelText: '取消',
-                              title: `是否切换模式【${node.title}】`,
-                              icon: <ExclamationCircleOutlined />,
-                              // content: 'Some descriptions',
-                              onOk() {
-                                let currentNode: any = node;
-                                let mode = 'markdown';
-                                if (currentNode.editType === 'markdown') {
-                                  mode = 'wysiwyg';
-                                }
-                                dispatch &&
-                                  dispatch({
-                                    type: 'editorModel/_updateCatalog',
-                                    payload: {
-                                      key: currentNode.key,
-                                      editType: mode,
-                                    },
-                                  });
-                                if (editorModel.currentKey === node.key) {
-                                  changeMode(
-                                    editorRef.current.getInstance(),
-                                    mode,
-                                    true,
-                                  );
-                                }
-                              },
-                            });
-                          }}
-                          key="3"
-                        >
-                          切换编辑器模式
-                        </Menu.Item>
-                      )}
-                    </Menu>
-                  }
-                  trigger={['contextMenu']}
-                >
-                  <div
-                    style={{
-                      width: showSiderWidth.siderWidth - 35 + 'px',
-                    }}
-                    className="catalog-tree-node-title"
-                  >
-                    {node.title}
-                  </div>
-                </Dropdown>
-              );
-            }}
-            onDragEnd={(info) => {}}
-            onDrop={(info) => {
-              console.log(info);
-            }}
-            draggable={true}
-            treeData={kbFlag ? editorModel.treeData : []}
-            showIcon={true}
-          />
-        </div>
+        <EditorCatalog
+          currentKey={editorModel.currentKey}
+          onSelectKb={onSelectKb}
+          defaultKb={kbFlag ? editorModel.currentKb : undefined}
+          kbData={kbModel.data}
+          showToolBar={kbFlag}
+          onSelect={onSelect}
+          addCatalog={addCatalog}
+          deleteCatalog={deleteCatalog}
+          treeData={kbFlag ? editorModel.treeData : []}
+          nodeWidth={showSiderWidth.siderWidth - 35 + 'px'}
+          width={showSiderWidth.siderWidth + 'px'}
+          changeMode={changeEditorMode}
+        />
       </Sider>
       <Layout>
         {kbFlag ? (
@@ -270,27 +164,11 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
               <EditorTitle
                 key={editKey ? editKey : ''}
                 title={editorModel.currentTitle}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  dispatch &&
-                    dispatch({
-                      type: 'editorModel/_updateCatalog',
-                      payload: {
-                        key: editorModel.currentKey,
-                        title: value,
-                      },
-                    });
-                }}
+                onChange={onChangeTitle}
               />
             </Header>
-            <Content
-              style={{
-                padding: '0 0px',
-                marginLeft: '300px',
-                height: 'calc(100vh - 80px)',
-              }}
-            >
-              <TuiEditor
+            <Content className="editor-container">
+              <TextEditor
                 overview={editorModel.currentEditType == 'wysiwyg'}
                 height="calc(100vh - 80px)"
                 value={kbFlag ? editorModel.currentText : ''}
@@ -298,31 +176,13 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
                 key={editKey ? editKey : ''}
                 fileKey={editorModel.currentFileKey}
                 editType={editorModel.currentEditType}
-                change={(text) => {
-                  dispatch &&
-                    dispatch({
-                      type: 'editorModel/saveText',
-                      payload: text,
-                    });
-                }}
-                blur={(text) => {
-                  dispatch &&
-                    dispatch({
-                      type: 'editorModel/_saveText',
-                      payload: text,
-                    });
-                }}
+                change={onChange}
+                blur={onBlur}
               />
             </Content>
           </>
         ) : (
-          <Empty
-            style={{
-              height: 'calc(100vh - 20px)',
-              lineHeight: 'calc(100vh - 20px)',
-            }}
-            description={'请选择知识库'}
-          />
+          <Empty className="editor-empty" description={'请选择知识库'} />
         )}
       </Layout>
     </Layout>
