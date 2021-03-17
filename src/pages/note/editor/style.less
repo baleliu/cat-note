@@ -9,69 +9,13 @@
   overflow-y: scroll;
   overflow-x: hidden;
   background-color: #fff;
-  .editor-select-kb {
-    z-index: 99;
-  }
-  .catalog-tool-bar {
-    height: 33px;
-    margin: 0 0;
-    position: fixed;
-    z-index: 99;
-    // margin-left: 60px;
-    margin-top: 60px;
-    border-top: 1px solid #e5e5e5;
-    border-bottom: 1px solid #e5e5e5;
-    background-color: #fff;
-    display: flex;
-    .catalog-tool-btn {
-      margin-top: 0px;
-      // border-left: 1px solid #e5e5e5;
-      border-right: 1px solid #e5e5e5;
-      width: 33px;
-      height: 33px;
-      margin-right: 1px;
-    }
-    .catalog-tool-btn-icon {
-      margin-top: 1px;
-      line-height: 33px;
-      font-size: 20px;
-      width: 100%;
-      color: #555;
-    }
-    .catalog-tool-btn-icon:hover {
-      color: @primary-color;
-    }
-  }
-  .catalog-tree-container {
-    padding-top: 95px;
-    .ant-tree-switcher {
-      width: 12px;
-      line-height: 50px;
-      svg {
-        margin-left: 0px;
-      }
-    }
-    .ant-tree-node-selected {
-      padding: 0;
-    }
-  }
-  .catalog-tree-node-title {
-    border: 1px solid @primary-line-color;
-    width: 100%;
-    height: 50px;
-  }
-  .ant-select-selector {
-    height: 60px !important;
-    line-height: 60px;
-    font-size: 20px;
-    .ant-select-selection-item {
-      line-height: 60px !important;
-    }
-  }
-  .ant-select-borderless .ant-select-selector {
-    background-color: #fff !important;
-  }
-  .ant-tree .ant-tree-treenode {
-    padding-bottom: 2px;
-  }
+}
+.editor-container {
+  padding: 0;
+  margin-left: 300px;
+  height: calc(100vh - 80px);
+}
+.editor-empty {
+  height: calc(100vh - 20px);
+  line-height: calc(100vh - 20px);
 }
