@@ -303,13 +303,16 @@ export default (props: {
             width="260px"
             className="editor-right-sider"
             style={{
-              backgroundColor: '#fff',
               height: props.height,
-              overflowY: 'scroll',
             }}
           >
             {
-              <div className="editor-right-sider-inner1">
+              <div
+                className="editor-right-sider-inner1"
+                style={{
+                  height: props.height,
+                }}
+              >
                 {props.value
                   .split('\n')
                   .filter((o: string) => {
