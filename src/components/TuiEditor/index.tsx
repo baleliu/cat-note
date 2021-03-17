@@ -64,6 +64,13 @@ export const changeMode = (instance, mode, isWithoutFocus) => {
   }
 };
 
+const handleInnerCatalog = (id: string): string => {
+  id = '_' + id.trim();
+  id = id.replace(' ', '_');
+  id = id.replace('.', '_');
+  return id;
+};
+
 /**
  * 自定义 html 渲染 https://github.com/nhn/tui.editor/blob/a22c2c379cc6495eaea1c9dded61dc501eca9e26/apps/editor/docs/custom-html-renderer.md
  * @param props editor props
@@ -72,10 +79,7 @@ export const changeMode = (instance, mode, isWithoutFocus) => {
 const customHTMLRenderer: any = (props) => {
   return {
     heading(node, b) {
-      let id: string = b.getChildrenText(node);
-      id = '_' + id.trim();
-      id = id.replace(' ', '_');
-      id = id.replace('.', '_');
+      let id: string = handleInnerCatalog(b.getChildrenText(node));
       return {
         type: b.entering ? 'openTag' : 'closeTag',
         tagName: `h${node.level}`,
@@ -136,7 +140,7 @@ const hooks = (editorRef, props) => {
           console.log(this.result);
         }
         let altText = 'image';
-        let filekey = suffix;
+        let fileKey = suffix;
         if (editorRef.current.getInstance().currentMode === 'markdown') {
           const cm = editorRef.current.getInstance().getCurrentModeEditor().cm;
           const doc = cm.getDoc();
@@ -150,18 +154,20 @@ const hooks = (editorRef, props) => {
             line: range.to.line,
             ch: range.to.ch,
           };
-          const replaceText = `![${altText}](${filekey})`;
+          const replaceText = `![${altText}](${fileKey})`;
           doc.replaceRange(replaceText, from, to, '+addImage');
           cm.focus();
         } else {
           const sq = editorRef.current.getInstance().getCurrentModeEditor()
             .editor;
           editorRef.current.getInstance().focus();
-          let imageUrl = readFileKeyAsBase64(filekey, props.filekey);
+          console.log(props);
+          let imageUrl = readFileKeyAsBase64(fileKey, props.fileKey);
+          console.log(`处理图片 ${imageUrl}`);
           if (!sq.hasFormat('PRE')) {
             sq.insertImage(imageUrl, {
               alt: altText,
-              'src-file-key': filekey,
+              'src-file-key': fileKey,
             });
           }
         }
@@ -172,12 +178,14 @@ const hooks = (editorRef, props) => {
 };
 
 const readFileKeyAsBase64 = (suffix, fileKey) => {
+  console.log(`readFileKeyAsBase64 fileKey ${fileKey}`);
   const encoding = 'base64';
   const src = window.api.file.readFileSync({
     fileKey: fileKey,
     encoding: encoding,
     suffix: suffix,
   });
+  console.log(`readFileKeyAsBase64 ${src}`);
   return `data:image/png;${encoding},${src}`;
 };
 
@@ -290,9 +298,7 @@ export default (props: {
             hideModeSwitch={true}
             useDefaultHTMLSanitizer={false}
             hooks={hooks(props.instanceRef, props)}
-            customHTMLRenderer={{
-              ...customHTMLRenderer(props),
-            }}
+            customHTMLRenderer={customHTMLRenderer(props)}
             useCommandShortcut={true}
             ref={props.instanceRef}
             events={events(props.instanceRef, props)}
@@ -325,10 +331,7 @@ export default (props: {
                       temp = temp.substring(1);
                       level++;
                     }
-                    temp = temp.trim();
-                    let href = '_' + temp.replace(' ', '_');
-                    href = href.replace('.', '_');
-                    href = href.replace('\\', '');
+                    let href = handleInnerCatalog(temp);
                     return (
                       <div
                         className="editor-right-sider-inner2"
