@@ -2,7 +2,7 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
 import { Layout } from 'antd';
 import 'codemirror/lib/codemirror.css';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import uuid from 'uuid';
 import './style.less';
 
@@ -283,6 +283,10 @@ export default (props: {
   blur?: EventType;
   change?: EventType;
 }) => {
+  const [instance, setInstance] = useState();
+  useEffect(() => {
+    setInstance(props.instanceRef);
+  }, [props.instanceRef]);
   return (
     <div style={props.style}>
       <Layout>
@@ -344,10 +348,7 @@ export default (props: {
                         <a
                           href={`#${href}`}
                           dangerouslySetInnerHTML={{
-                            __html: toHtml(
-                              getInstance(props.instanceRef),
-                              temp,
-                            ),
+                            __html: toHtml(getInstance(instance), temp),
                           }}
                         />
                       </div>

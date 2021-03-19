@@ -130,7 +130,7 @@ const IndexPage: FC<PageProps> = ({ kbModel, dispatch }) => {
   for (let i = 0, len = pageData.length; i < len; i += cardSize) {
     let rowData = pageData.slice(i, i + cardSize);
     finalData.push(
-      <Row>
+      <Row key={i}>
         {rowData.map((o, index) => {
           const start: boolean = i + index === 0;
           const end: boolean = i + index === pageData.length - 1;
@@ -159,7 +159,7 @@ const IndexPage: FC<PageProps> = ({ kbModel, dispatch }) => {
           }
           if (end) {
             return (
-              <Col span={colSpan}>
+              <Col key={i + index} span={colSpan}>
                 <Card
                   className="kb-card-create"
                   onClick={toggleDustbin}
@@ -180,7 +180,7 @@ const IndexPage: FC<PageProps> = ({ kbModel, dispatch }) => {
             );
           }
           return (
-            <Col span={colSpan}>
+            <Col key={i + index} span={colSpan}>
               <Card
                 className="kb-card"
                 hoverable={true}
