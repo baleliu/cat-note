@@ -42,12 +42,6 @@ const GlobalModel: GlobalModelType = {
         name: '写',
         icon: 'EditOutlined',
       },
-      {
-        id: '4',
-        route: '/link',
-        name: 'link',
-        icon: 'EditOutlined',
-      },
     ],
   },
   effects: {},

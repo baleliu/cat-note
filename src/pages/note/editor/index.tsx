@@ -147,42 +147,46 @@ const IndexPage: FC<PageProps> = ({ editorModel, kbModel, dispatch }) => {
           addCatalog={addCatalog}
           deleteCatalog={deleteCatalog}
           treeData={kbFlag ? editorModel.treeData : []}
-          nodeWidth={showSiderWidth.siderWidth - 35 + 'px'}
+          nodeWidth={showSiderWidth.siderWidth - 33 + 'px'}
           width={showSiderWidth.siderWidth + 'px'}
           changeMode={changeEditorMode}
         />
       </Sider>
       <Layout>
         {kbFlag ? (
-          <>
-            <Header
-              style={{
-                marginLeft: showSiderWidth.siderWidth + 'px',
-              }}
-              className="editor-title"
-            >
-              <EditorTitle
-                key={editKey ? editKey : ''}
-                title={editorModel.currentTitle}
-                onChange={onChangeTitle}
-              />
-            </Header>
-            <Content className="editor-container">
-              <TextEditor
-                overview={editorModel.currentEditType == 'wysiwyg'}
-                height="calc(100vh - 80px)"
-                value={kbFlag ? editorModel.currentText : ''}
-                instanceRef={editorRef}
-                key={editKey ? editKey : ''}
-                fileKey={editorModel.currentFileKey}
-                editType={editorModel.currentEditType}
-                change={onChange}
-                blur={onBlur}
-              />
-            </Content>
-          </>
+          editorModel.currentKey ? (
+            <>
+              <Header
+                style={{
+                  marginLeft: showSiderWidth.siderWidth + 'px',
+                }}
+                className="editor-title"
+              >
+                <EditorTitle
+                  key={editKey ? editKey : ''}
+                  title={editorModel.currentTitle}
+                  onChange={onChangeTitle}
+                />
+              </Header>
+              <Content className="editor-container">
+                <TextEditor
+                  overview={editorModel.currentEditType == 'wysiwyg'}
+                  height="calc(100vh - 80px)"
+                  value={kbFlag ? editorModel.currentText : ''}
+                  instanceRef={editorRef}
+                  key={editKey ? editKey : ''}
+                  fileKey={editorModel.currentFileKey}
+                  editType={editorModel.currentEditType}
+                  change={onChange}
+                  blur={onBlur}
+                />
+              </Content>
+            </>
+          ) : (
+            <Empty className="editor-empty" description={'请选择/新建文档'} />
+          )
         ) : (
-          <Empty className="editor-empty" description={'请选择知识库'} />
+          <Empty className="editor-empty" description={'请选择库'} />
         )}
       </Layout>
     </Layout>

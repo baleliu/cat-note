@@ -101,13 +101,13 @@ const GlobalLayout = ({
               icon={<Icon component={Logo} />}
             />
             <Menu defaultSelectedKeys={['1']} mode="inline">
-              <Menu.Item
+              {/* <Menu.Item
                 key="1"
                 onClick={showDrawer}
                 icon={<DownCircleOutlined />}
               >
                 应用菜单
-              </Menu.Item>
+              </Menu.Item> */}
               {globalModel.bars.map((o) => {
                 return (
                   <Menu.Item

@@ -192,11 +192,21 @@ const IndexModel: IndexModelType = {
   },
   subscriptions: {
     setup({ dispatch, history }) {
-      return history.listen(({ pathname }) => {
+      return history.listen((e) => {
+        let { pathname } = e;
+        let {
+          query: { kbId },
+        } = e as any;
         if (pathname === '/note/editor') {
           dispatch({
             type: 'kbModel/selectAll',
           });
+          if (kbId) {
+            dispatch({
+              type: 'loadCatalog',
+              payload: kbId,
+            });
+          }
           dispatch({
             type: 'globalModel/updateFooter',
             payload: '',

@@ -16,6 +16,7 @@ export interface KbModelType {
   state: KbModelState;
   effects: {
     _createOne: Effect;
+    _updateOne: Effect;
     _deleteOne: Effect;
     _clearDustbin: Effect;
     _deleteDustbinOne: Effect;
@@ -23,6 +24,7 @@ export interface KbModelType {
   reducers: {
     selectAll: ImmerReducer<KbModelState>;
     createOne: ImmerReducer<KbModelState>;
+    updateOne: ImmerReducer<KbModelState>;
     deleteOne: ImmerReducer<KbModelState>;
     deleteDustbinOne: ImmerReducer<KbModelState>;
     clearDustbin: ImmerReducer<KbModelState>;
@@ -58,10 +60,22 @@ const KbModel: KbModelType = {
         type: 'createOne',
         payload: payload,
       });
-      const data = yield select((state: any) => {
-        return state.kbModel.data;
+      storeKb(
+        yield select((state: any) => {
+          return state.kbModel.data;
+        }),
+      );
+    },
+    *_updateOne({ payload }, { call, put, select }) {
+      yield put({
+        type: 'updateOne',
+        payload: payload,
       });
-      storeKb(data);
+      storeKb(
+        yield select((state: any) => {
+          return state.kbModel.data;
+        }),
+      );
     },
     *_deleteOne({ payload }, { call, put, select }) {
       yield put({
@@ -108,6 +122,15 @@ const KbModel: KbModelType = {
         id: uuid.v4(),
         ...action.payload,
       });
+    },
+    updateOne(state, action) {
+      for (let i in state.data) {
+        const { id, name, desc } = action.payload;
+        if (state.data[i].id === id) {
+          state.data[i].name = name;
+          state.data[i].desc = desc;
+        }
+      }
     },
     deleteDustbinOne(state, action) {
       for (let i in state.dustbin) {

@@ -24,13 +24,12 @@ let mainWindow;
 function createMainWindow() {
   const window = new BrowserWindow({
     titleBarStyle: 'hidden',
-    width: 1600,
+    width: 1500,
     height: 800,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
       enableRemoteModule: false,
-      // path.join(__dirname, "preload.js") 为相对路径, preload 需要转绝对路径
       preload: path.resolve(path.join(__dirname, 'preload.js')),
     },
   });
@@ -99,6 +98,11 @@ function createMainWindow() {
     },
   );
 
+  window.webContents.on('found-in-page', (event, result) => {
+    console.log(event);
+    console.log(result);
+  });
+
   window.webContents.on('devtools-opened', () => {
     window.focus();
     setImmediate(() => {
@@ -119,7 +123,6 @@ function createMainWindow() {
 
 // 窗口关闭
 app.on('window-all-closed', () => {
-  // on macOS it is common for applications to stay open until the user explicitly quits
   if (process.platform !== 'darwin') {
     app.quit();
   }
